@@ -1,0 +1,24 @@
+model:
+  model_type: STFTTCNN 
+
+preprocessing:
+  target_rate: 16000
+
+feature_extraction:
+  n_fft: 512
+  hop_length: 160
+  window_length: 400
+  window: hann
+
+deployment:
+  hardware_setup:
+    serie: STM32N6
+  frames_per_patch: 30 # Number of frames per inference
+  # Number of overlap frames. Patches are overlapped to the right & to the left.
+  # MAKE SURE quantization.static_sequence_length = frames_per_patch + 2 * overlap_frames !!!
+  overlap_frames: 5 
+  output_threshold: -50
+
+hydra:
+  run:
+    dir: GenHeaderOutput

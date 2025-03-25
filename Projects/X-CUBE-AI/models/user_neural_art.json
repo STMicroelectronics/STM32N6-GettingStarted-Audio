@@ -1,0 +1,10 @@
+{
+    "Profiles": {
+		"default":
+        {
+    	    "memory_pool": "./stm32n6.mpool",
+            "memory_desc": "./stm32n6.mdesc",
+            "options": "--Ocache-opt -O3 --Os --native-float  --mvei --Omax-ca-pipe 4 --cache-maintenance --csv-file network --all-buffers-info"
+        }
+   }
+}

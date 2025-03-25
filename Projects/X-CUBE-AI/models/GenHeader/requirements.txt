@@ -1,0 +1,6 @@
+hydra-core
+omegaconf
+numpy>=1.20
+munch
+seaborn
+librosa

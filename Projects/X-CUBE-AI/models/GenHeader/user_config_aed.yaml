@@ -1,0 +1,36 @@
+model:
+  model_type: YAMNET 
+  
+preprocessing:
+  target_rate: 16000
+
+feature_extraction:
+  patch_length: 96
+  n_mels: 64
+  overlap: 0.25
+  n_fft: 512
+  hop_length: 160
+  window_length: 400
+  window: hann
+  center: False
+  pad_mode: constant
+  power: 1.0
+  fmin: 125
+  fmax: 7500
+  norm: None
+  htk : True
+  to_db : False
+  include_last_patch: False
+
+dataset:
+  class_names: ['dog', 'chainsaw', 'crackling_fire', 'helicopter', 'rain', 'crying_baby', 'clock_tick', 'sneezing', 'rooster', 'sea_waves']
+  use_garbage_class: False 
+  
+deployment:
+  hardware_setup:
+    serie: STM32N6
+  unknown_class_threshold: 0.5 # Threshold used for OOD detection. Mutually exclusive with use_garbage_class
+                               # Set to 0 to disable. To enable, set to any float between 0 and 1.
+hydra:
+  run:
+    dir: GenHeaderOutput
