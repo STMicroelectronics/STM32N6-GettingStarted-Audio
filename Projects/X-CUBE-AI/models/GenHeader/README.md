@@ -1,6 +1,6 @@
 # Audio event detection Getting Started header generation scripts
 
-These scripts are derived from [STM32 model zoo](https://github.com/STMicroelectronics/stm32ai-modelzoo) used for Audio Event Detection deployement on target.
+These scripts are derived from [STM32 model zoo](https://github.com/STMicroelectronics/stm32ai-modelzoo) used for Audio Event Detection deployment on target.
 The purpôse is to generate the following files:
 
 - user_mel_tables.c
