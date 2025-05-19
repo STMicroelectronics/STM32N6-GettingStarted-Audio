@@ -1,5 +1,5 @@
 # /*---------------------------------------------------------------------------------------------
-#  * Copyright (c) 2022-2023 STMicroelectronics.
+#  * Copyright (c) 2022-2025 STMicroelectronics.
 #  * All rights reserved.
 #  *
 #  * This software is licensed under terms that can be found in the LICENSE file in
@@ -136,7 +136,7 @@ def generate_LUTs_header_file(path,
         f.write('******************************************************************************\n')
         f.write('* @attention\n')
         f.write('*\n')
-        f.write('* Copyright (c) 2024 STMicroelectronics.\n')
+        f.write('* Copyright (c) 2024-2025 STMicroelectronics.\n')
         f.write('* All rights reserved.\n')
         f.write('*\n')
         f.write('* This software is licensed under terms that can be found in the LICENSE file\n')
@@ -218,7 +218,7 @@ def generate_LUTs_c_file(path,
         f.write('******************************************************************************\n')
         f.write('* @attention\n')
         f.write('*\n')
-        f.write('* Copyright (c) 2022 STMicroelectronics.\n')
+        f.write('* Copyright (c) 2022-2025 STMicroelectronics.\n')
         f.write('* All rights reserved.\n')
         f.write('*\n')
         f.write('* This software is licensed under terms that can be found in the LICENSE file\n')
@@ -340,7 +340,7 @@ def generate_stft_LUT_files(config):
         f.write('******************************************************************************\n')
         f.write('* @attention\n')
         f.write('*\n')
-        f.write('* Copyright (c) 2024 STMicroelectronics.\n')
+        f.write('* Copyright (c) 2024-2025 STMicroelectronics.\n')
         f.write('* All rights reserved.\n')
         f.write('*\n')
         f.write('* This software is licensed under terms that can be found in the LICENSE file\n')
@@ -366,7 +366,7 @@ def generate_stft_LUT_files(config):
         f.write('******************************************************************************\n')
         f.write('* @attention\n')
         f.write('*\n')
-        f.write('* Copyright (c) 2024 STMicroelectronics.\n')
+        f.write('* Copyright (c) 2024-2025 STMicroelectronics.\n')
         f.write('* All rights reserved.\n')
         f.write('*\n')
         f.write('* This software is licensed under terms that can be found in the LICENSE file\n')

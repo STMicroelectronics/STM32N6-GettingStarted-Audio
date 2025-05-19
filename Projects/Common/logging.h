@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
   * @file    Logging.h
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   This file contains basic implememtation for a logger
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    Template/Inc/partition_stm32n657xx.h
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   CMSIS STM32N657xx Device Initial Setup for Secure / Non-Secure Zones
   *          for ARMCM55 based on CMSIS CORE V5.3.1 partition_ARMCM33.h Template.
   *

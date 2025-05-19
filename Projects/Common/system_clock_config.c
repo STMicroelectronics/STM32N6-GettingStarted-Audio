@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    system_clock_config.c
   * @author  GPM/AIS Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   system clock config
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file

@@ -1,7 +1,7 @@
 #!\bin\bash
 
-pathCubeIde="C:/ST/STM32CubeIDE_1.17.0.24B1/STM32CubeIDE"
-pathProg="/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.win32_2.2.0.202409170845/tools/bin"
+pathCubeIde="<Path_to_cube ide>"
+pathProg="<Path_to_cube_programmer_plug_in>/tools/bin"
 el=$pathCubeIde$pathProg"/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
 prog=$pathCubeIde$pathProg"/STM32_Programmer_CLI.exe"
 

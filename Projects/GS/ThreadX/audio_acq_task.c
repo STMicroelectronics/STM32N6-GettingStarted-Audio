@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file     audio_acq_task.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   
   ******************************************************************************
   * @attention
@@ -35,16 +35,7 @@ void audio_acq_thread_func(ULONG arg)
 {
   AppMsg_t report;
   initAudioCapture(&AudioAcqTask.ctx);
-  
-
-  
   startAudioCapture(&AudioAcqTask.ctx);
-
-  /* acquisition is started , now processing with cache can start */  
-  if (TX_SUCCESS != tx_thread_resume(&AudioProcTask.thread))
-  {
-    /* error */
-  }
   
   while(1) {
     if(TX_SUCCESS == tx_queue_receive(&AudioAcqTask.queue, &report, TX_WAIT_FOREVER))

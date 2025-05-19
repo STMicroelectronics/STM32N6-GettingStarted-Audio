@@ -75,6 +75,8 @@
 #include <string.h>
 #include <stdarg.h>
 
+#define USE_PRINTF_FROM_TOOL 1
+
 #include "aiTestUtility.h"
 
 #ifndef USE_USB_CDC_CLASS

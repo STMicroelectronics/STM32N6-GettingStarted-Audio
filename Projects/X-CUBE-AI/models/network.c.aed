@@ -18,20 +18,20 @@
   */
 
 /*
- * GIT_SHA         "0307e413493a9893cb1f0a1266b856e2af3bba2b"
- * GIT_BRANCH      "STAI-2.0"
- * GIT_DESCRIPTION "STAI-2.0-RC1-1-1-g0307e413"
+ * GIT_SHA         "27f5d5bcb9ca9522b73a54d7aec841664ee448cd"
+ * GIT_BRANCH      "STAI-2.1"
+ * GIT_DESCRIPTION "atonn-v1.1.0-31-g27f5d5bcb"
  *
  * Command Line options:
- * --onnx-input = "C:/ST/CurrentDev/GS_AED_N6/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_1_0.onnx"
- * --out-dir-prefix = "C:/ST/CurrentDev/GS_AED_N6/Projects/X-CUBE-AI/models/st_ai_ws/neural_art__network/"
+ * --onnx-input = "C:/ST/CurrentDev/STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_2_0.onnx"
+ * --out-dir-prefix = "C:/ST/CurrentDev/STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_ws/neural_art__network/"
  * --all-buffers-info = true
  * --mvei = true
- * --load-mdesc-file = "C:/ST/stedgeai-windows-10.0.0-RC1-16-signed/Utilities/configs/stm32n6"
- * --load-mpool-file = "C:/ST/CurrentDev/GS_AED_N6/Projects/X-CUBE-AI/models/stm32n6"
+ * --load-mdesc-file = "C:/ST/STEdgeAI2.1/2.1/Utilities/configs/stm32n6"
+ * --load-mpool-file = "C:/ST/CurrentDev/STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/stm32n6"
  * --cache-maintenance = true
  * --native-float = true
- * --json-quant-file = "C:/ST/CurrentDev/GS_AED_N6/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_1_0_Q.json"
+ * --json-quant-file = "C:/ST/CurrentDev/STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_2_0_Q.json"
  * --optimization = 3
  * --Os = true
  * --Omax-ca-pipe = 4
@@ -46,7 +46,7 @@
 #include "ll_aton_version.h"
 #include "ll_sw.h"
 
-#if LL_ATON_VERSION_MAJOR != 1 || LL_ATON_VERSION_MINOR != 0 || LL_ATON_VERSION_MICRO != 0 || LL_ATON_VERSION_DEV != 16
+#if LL_ATON_VERSION_MAJOR != 1 || LL_ATON_VERSION_MINOR != 1 || LL_ATON_VERSION_MICRO != 0 || LL_ATON_VERSION_DEV != 31
 #  warning "Possible mismatch in ll_aton library used"
 #endif
 
@@ -111,19 +111,11 @@ bool LL_ATON_EC_Inference_Init_Default(void)
 
 static void LL_ATON_End_EpochBlock_1(const void *epoch_block)
 {
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache invalidate (only) operation (SW, whole range) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296) */
-  mcu_cache_invalidate_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152) /* Equivalent hex address = 0x3435c000UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296) /* Equivalent hex address = 0x3435d800UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296))) */
+  LL_ATON_Cache_MCU_Invalidate_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152))) /* Equivalent hex address = 0x3435c000UL */, 6144);
 
   LL_ATON_LIB_UNUSED(epoch_block);
 
@@ -174,19 +166,11 @@ static void LL_ATON_End_EpochBlock_1(const void *epoch_block)
   static const uint8_t Transpose_2_target_pos_array_in_1[] = { 0, 2, 1, 3 };
   LL_ATON_LIB_DMA_Transpose(&Transpose_2_tensor_shape_in_1[0], Transpose_2_tensor_axes_offsets_in_1[0], &Transpose_2_tensor_shape_out_1[0], Transpose_2_tensor_axes_offsets_out_1[0], Transpose_2_target_pos_array_in_1, Transpose_2_perm_to_use_array_in_1, 0, 1);
 
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache clean (only) operation (SW, whole range) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296) */
-  mcu_cache_clean_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152) /* Equivalent hex address = 0x3435c000UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296) /* Equivalent hex address = 0x3435d800UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 55296))) */
+  LL_ATON_Cache_MCU_Clean_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 49152))) /* Equivalent hex address = 0x3435c000UL */, 6144);
 
 }
 
@@ -283,7 +267,7 @@ static void LL_ATON_Start_EpochBlock_2(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580496) /* Equivalent hex address = 0x704ea250UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580496))) /* Equivalent hex address = 0x704ea250UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -334,7 +318,7 @@ static void LL_ATON_Start_EpochBlock_2(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579984) /* Equivalent hex address = 0x704ea050UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579984))) /* Equivalent hex address = 0x704ea050UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -509,7 +493,7 @@ static void LL_ATON_Start_EpochBlock_2(const void *epoch_block)
   /* epoch=2 */
   LL_Switch_Init(switch_init_in_2, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_2_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_2_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -541,7 +525,7 @@ static void LL_ATON_End_EpochBlock_2(const void *epoch_block)
   /* epoch=2 */
   LL_Switch_Deinit(switch_deinit_in_2, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_2_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_2_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -649,7 +633,7 @@ static void LL_ATON_Start_EpochBlock_3(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580560) /* Equivalent hex address = 0x704ea290UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580560))) /* Equivalent hex address = 0x704ea290UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -700,7 +684,7 @@ static void LL_ATON_Start_EpochBlock_3(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580112) /* Equivalent hex address = 0x704ea0d0UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580112))) /* Equivalent hex address = 0x704ea0d0UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -872,7 +856,7 @@ static void LL_ATON_Start_EpochBlock_3(const void *epoch_block)
   /* epoch=3 */
   LL_Switch_Init(switch_init_in_3, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_3_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_3_all_units[] = {
     { {STRENG, 7} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -904,7 +888,7 @@ static void LL_ATON_End_EpochBlock_3(const void *epoch_block)
   /* epoch=3 */
   LL_Switch_Deinit(switch_deinit_in_3, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_3_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_3_all_units[] = {
     { {STRENG, 7} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -1012,7 +996,7 @@ static void LL_ATON_Start_EpochBlock_4(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580240) /* Equivalent hex address = 0x704ea150UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580240))) /* Equivalent hex address = 0x704ea150UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -1063,7 +1047,7 @@ static void LL_ATON_Start_EpochBlock_4(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578448) /* Equivalent hex address = 0x704e9a50UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578448))) /* Equivalent hex address = 0x704e9a50UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -1239,7 +1223,7 @@ static void LL_ATON_Start_EpochBlock_4(const void *epoch_block)
   /* epoch=4 */
   LL_Switch_Init(switch_init_in_4, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_4_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_4_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -1271,7 +1255,7 @@ static void LL_ATON_End_EpochBlock_4(const void *epoch_block)
   /* epoch=4 */
   LL_Switch_Deinit(switch_deinit_in_4, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_4_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_4_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -1379,7 +1363,7 @@ static void LL_ATON_Start_EpochBlock_5(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580368) /* Equivalent hex address = 0x704ea1d0UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580368))) /* Equivalent hex address = 0x704ea1d0UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -1430,7 +1414,7 @@ static void LL_ATON_Start_EpochBlock_5(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578704) /* Equivalent hex address = 0x704e9b50UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578704))) /* Equivalent hex address = 0x704e9b50UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -1602,7 +1586,7 @@ static void LL_ATON_Start_EpochBlock_5(const void *epoch_block)
   /* epoch=5 */
   LL_Switch_Init(switch_init_in_5, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_5_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_5_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -1634,7 +1618,7 @@ static void LL_ATON_End_EpochBlock_5(const void *epoch_block)
   /* epoch=5 */
   LL_Switch_Deinit(switch_deinit_in_5, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_5_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_5_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -1742,7 +1726,7 @@ static void LL_ATON_Start_EpochBlock_6(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578960) /* Equivalent hex address = 0x704e9c50UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3578960))) /* Equivalent hex address = 0x704e9c50UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -1793,7 +1777,7 @@ static void LL_ATON_Start_EpochBlock_6(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3574064) /* Equivalent hex address = 0x704e8930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3574064))) /* Equivalent hex address = 0x704e8930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -1969,7 +1953,7 @@ static void LL_ATON_Start_EpochBlock_6(const void *epoch_block)
   /* epoch=6 */
   LL_Switch_Init(switch_init_in_6, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_6_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_6_all_units[] = {
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2001,7 +1985,7 @@ static void LL_ATON_End_EpochBlock_6(const void *epoch_block)
   /* epoch=6 */
   LL_Switch_Deinit(switch_deinit_in_6, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_6_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_6_all_units[] = {
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2109,7 +2093,7 @@ static void LL_ATON_Start_EpochBlock_7(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579216) /* Equivalent hex address = 0x704e9d50UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579216))) /* Equivalent hex address = 0x704e9d50UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -2160,7 +2144,7 @@ static void LL_ATON_Start_EpochBlock_7(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3574576) /* Equivalent hex address = 0x704e8b30UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3574576))) /* Equivalent hex address = 0x704e8b30UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -2332,7 +2316,7 @@ static void LL_ATON_Start_EpochBlock_7(const void *epoch_block)
   /* epoch=7 */
   LL_Switch_Init(switch_init_in_7, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_7_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_7_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2364,7 +2348,7 @@ static void LL_ATON_End_EpochBlock_7(const void *epoch_block)
   /* epoch=7 */
   LL_Switch_Deinit(switch_deinit_in_7, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_7_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_7_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2472,7 +2456,7 @@ static void LL_ATON_Start_EpochBlock_8(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579472) /* Equivalent hex address = 0x704e9e50UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579472))) /* Equivalent hex address = 0x704e9e50UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -2523,7 +2507,7 @@ static void LL_ATON_Start_EpochBlock_8(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3575088) /* Equivalent hex address = 0x704e8d30UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3575088))) /* Equivalent hex address = 0x704e8d30UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -2699,7 +2683,7 @@ static void LL_ATON_Start_EpochBlock_8(const void *epoch_block)
   /* epoch=8 */
   LL_Switch_Init(switch_init_in_8, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_8_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_8_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2731,7 +2715,7 @@ static void LL_ATON_End_EpochBlock_8(const void *epoch_block)
   /* epoch=8 */
   LL_Switch_Deinit(switch_deinit_in_8, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_8_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_8_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -2839,7 +2823,7 @@ static void LL_ATON_Start_EpochBlock_9(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579728) /* Equivalent hex address = 0x704e9f50UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3579728))) /* Equivalent hex address = 0x704e9f50UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -2890,7 +2874,7 @@ static void LL_ATON_Start_EpochBlock_9(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3575600) /* Equivalent hex address = 0x704e8f30UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3575600))) /* Equivalent hex address = 0x704e8f30UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -3062,7 +3046,7 @@ static void LL_ATON_Start_EpochBlock_9(const void *epoch_block)
   /* epoch=9 */
   LL_Switch_Init(switch_init_in_9, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_9_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_9_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3094,7 +3078,7 @@ static void LL_ATON_End_EpochBlock_9(const void *epoch_block)
   /* epoch=9 */
   LL_Switch_Deinit(switch_deinit_in_9, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_9_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_9_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3202,7 +3186,7 @@ static void LL_ATON_Start_EpochBlock_10(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3576112) /* Equivalent hex address = 0x704e9130UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3576112))) /* Equivalent hex address = 0x704e9130UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -3253,7 +3237,7 @@ static void LL_ATON_Start_EpochBlock_10(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3557680) /* Equivalent hex address = 0x704e4930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3557680))) /* Equivalent hex address = 0x704e4930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -3429,7 +3413,7 @@ static void LL_ATON_Start_EpochBlock_10(const void *epoch_block)
   /* epoch=10 */
   LL_Switch_Init(switch_init_in_10, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_10_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_10_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3461,7 +3445,7 @@ static void LL_ATON_End_EpochBlock_10(const void *epoch_block)
   /* epoch=10 */
   LL_Switch_Deinit(switch_deinit_in_10, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_10_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_10_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3569,7 +3553,7 @@ static void LL_ATON_Start_EpochBlock_11(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3576624) /* Equivalent hex address = 0x704e9330UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3576624))) /* Equivalent hex address = 0x704e9330UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -3620,7 +3604,7 @@ static void LL_ATON_Start_EpochBlock_11(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3558704) /* Equivalent hex address = 0x704e4d30UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3558704))) /* Equivalent hex address = 0x704e4d30UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -3792,7 +3776,7 @@ static void LL_ATON_Start_EpochBlock_11(const void *epoch_block)
   /* epoch=11 */
   LL_Switch_Init(switch_init_in_11, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_11_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_11_all_units[] = {
     { {STRENG, 8} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3824,7 +3808,7 @@ static void LL_ATON_End_EpochBlock_11(const void *epoch_block)
   /* epoch=11 */
   LL_Switch_Deinit(switch_deinit_in_11, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_11_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_11_all_units[] = {
     { {STRENG, 8} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -3986,7 +3970,7 @@ static void LL_ATON_Start_EpochBlock_12(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3577136) /* Equivalent hex address = 0x704e9530UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3577136))) /* Equivalent hex address = 0x704e9530UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -4037,7 +4021,7 @@ static void LL_ATON_Start_EpochBlock_12(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3559728) /* Equivalent hex address = 0x704e5130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3559728))) /* Equivalent hex address = 0x704e5130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -4167,7 +4151,7 @@ static void LL_ATON_Start_EpochBlock_12(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_38_zero_off_out_97_copy_in_1 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_38_zero_off_out_97_copy_in_1 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 49216,
     .frame_count = 0,
@@ -4242,7 +4226,7 @@ static void LL_ATON_Start_EpochBlock_12(const void *epoch_block)
   /* epoch=12 */
   LL_Switch_Init(switch_init_in_12, 9);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_12_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_12_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
@@ -4279,7 +4263,7 @@ static void LL_ATON_End_EpochBlock_12(const void *epoch_block)
   /* epoch=12 */
   LL_Switch_Deinit(switch_deinit_in_12, 9);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_12_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_12_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
@@ -4389,7 +4373,7 @@ static void LL_ATON_Start_EpochBlock_13(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3577648) /* Equivalent hex address = 0x704e9730UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3577648))) /* Equivalent hex address = 0x704e9730UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -4440,7 +4424,7 @@ static void LL_ATON_Start_EpochBlock_13(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3560752) /* Equivalent hex address = 0x704e5530UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3560752))) /* Equivalent hex address = 0x704e5530UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -4612,7 +4596,7 @@ static void LL_ATON_Start_EpochBlock_13(const void *epoch_block)
   /* epoch=13 */
   LL_Switch_Init(switch_init_in_13, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_13_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_13_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -4644,7 +4628,7 @@ static void LL_ATON_End_EpochBlock_13(const void *epoch_block)
   /* epoch=13 */
   LL_Switch_Deinit(switch_deinit_in_13, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_13_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_13_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -4806,7 +4790,7 @@ static void LL_ATON_Start_EpochBlock_14(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3561776) /* Equivalent hex address = 0x704e5930UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3561776))) /* Equivalent hex address = 0x704e5930UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -4857,7 +4841,7 @@ static void LL_ATON_Start_EpochBlock_14(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3533104) /* Equivalent hex address = 0x704de930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3533104))) /* Equivalent hex address = 0x704de930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -4987,7 +4971,7 @@ static void LL_ATON_Start_EpochBlock_14(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_45_zero_off_out_115_copy_in_2 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_45_zero_off_out_115_copy_in_2 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 30784,
     .frame_count = 0,
@@ -5062,7 +5046,7 @@ static void LL_ATON_Start_EpochBlock_14(const void *epoch_block)
   /* epoch=14 */
   LL_Switch_Init(switch_init_in_14, 9);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_14_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_14_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
@@ -5099,7 +5083,7 @@ static void LL_ATON_End_EpochBlock_14(const void *epoch_block)
   /* epoch=14 */
   LL_Switch_Deinit(switch_deinit_in_14, 9);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_14_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_14_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
@@ -5206,7 +5190,7 @@ static void LL_ATON_Start_EpochBlock_15(const void *epoch_block)
   /* epoch=15 */
   LL_Switch_Init(switch_init_in_15, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_15_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_15_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
   };
@@ -5228,7 +5212,7 @@ static void LL_ATON_End_EpochBlock_15(const void *epoch_block)
   /* epoch=15 */
   LL_Switch_Deinit(switch_deinit_in_15, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_15_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_15_all_units[] = {
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
   };
@@ -5331,7 +5315,7 @@ static void LL_ATON_Start_EpochBlock_16(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3562800) /* Equivalent hex address = 0x704e5d30UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3562800))) /* Equivalent hex address = 0x704e5d30UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -5382,7 +5366,7 @@ static void LL_ATON_Start_EpochBlock_16(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3535152) /* Equivalent hex address = 0x704df130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3535152))) /* Equivalent hex address = 0x704df130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -5557,7 +5541,7 @@ static void LL_ATON_Start_EpochBlock_16(const void *epoch_block)
   /* epoch=16 */
   LL_Switch_Init(switch_init_in_16, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_16_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_16_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -5589,7 +5573,7 @@ static void LL_ATON_End_EpochBlock_16(const void *epoch_block)
   /* epoch=16 */
   LL_Switch_Deinit(switch_deinit_in_16, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_16_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_16_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -5755,7 +5739,7 @@ static void LL_ATON_Start_EpochBlock_17(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3563824) /* Equivalent hex address = 0x704e6130UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3563824))) /* Equivalent hex address = 0x704e6130UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -5806,7 +5790,7 @@ static void LL_ATON_Start_EpochBlock_17(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3537200) /* Equivalent hex address = 0x704df930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3537200))) /* Equivalent hex address = 0x704df930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -5969,7 +5953,7 @@ static void LL_ATON_Start_EpochBlock_17(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_52_zero_off_out_133_copy_in_3 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_52_zero_off_out_133_copy_in_3 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 36928,
     .frame_count = 0,
@@ -6077,7 +6061,7 @@ static void LL_ATON_Start_EpochBlock_17(const void *epoch_block)
   /* epoch=17 */
   LL_Switch_Init(switch_init_in_17, 11);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_17_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_17_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -6118,7 +6102,7 @@ static void LL_ATON_End_EpochBlock_17(const void *epoch_block)
   /* epoch=17 */
   LL_Switch_Deinit(switch_deinit_in_17, 11);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_17_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_17_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -6227,7 +6211,7 @@ static void LL_ATON_Start_EpochBlock_18(const void *epoch_block)
   /* epoch=18 */
   LL_Switch_Init(switch_init_in_18, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_18_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_18_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -6249,7 +6233,7 @@ static void LL_ATON_End_EpochBlock_18(const void *epoch_block)
   /* epoch=18 */
   LL_Switch_Deinit(switch_deinit_in_18, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_18_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_18_all_units[] = {
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -6352,7 +6336,7 @@ static void LL_ATON_Start_EpochBlock_19(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3564848) /* Equivalent hex address = 0x704e6530UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3564848))) /* Equivalent hex address = 0x704e6530UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -6403,7 +6387,7 @@ static void LL_ATON_Start_EpochBlock_19(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3539248) /* Equivalent hex address = 0x704e0130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3539248))) /* Equivalent hex address = 0x704e0130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -6578,7 +6562,7 @@ static void LL_ATON_Start_EpochBlock_19(const void *epoch_block)
   /* epoch=19 */
   LL_Switch_Init(switch_init_in_19, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_19_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_19_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -6610,7 +6594,7 @@ static void LL_ATON_End_EpochBlock_19(const void *epoch_block)
   /* epoch=19 */
   LL_Switch_Deinit(switch_deinit_in_19, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_19_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_19_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -6776,7 +6760,7 @@ static void LL_ATON_Start_EpochBlock_20(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3565872) /* Equivalent hex address = 0x704e6930UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3565872))) /* Equivalent hex address = 0x704e6930UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -6827,7 +6811,7 @@ static void LL_ATON_Start_EpochBlock_20(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3541296) /* Equivalent hex address = 0x704e0930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3541296))) /* Equivalent hex address = 0x704e0930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -6990,7 +6974,7 @@ static void LL_ATON_Start_EpochBlock_20(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_59_zero_off_out_151_copy_in_4 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_59_zero_off_out_151_copy_in_4 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 36928,
     .frame_count = 0,
@@ -7098,7 +7082,7 @@ static void LL_ATON_Start_EpochBlock_20(const void *epoch_block)
   /* epoch=20 */
   LL_Switch_Init(switch_init_in_20, 11);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_20_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_20_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -7139,7 +7123,7 @@ static void LL_ATON_End_EpochBlock_20(const void *epoch_block)
   /* epoch=20 */
   LL_Switch_Deinit(switch_deinit_in_20, 11);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_20_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_20_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -7248,7 +7232,7 @@ static void LL_ATON_Start_EpochBlock_21(const void *epoch_block)
   /* epoch=21 */
   LL_Switch_Init(switch_init_in_21, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_21_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_21_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -7270,7 +7254,7 @@ static void LL_ATON_End_EpochBlock_21(const void *epoch_block)
   /* epoch=21 */
   LL_Switch_Deinit(switch_deinit_in_21, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_21_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_21_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -7373,7 +7357,7 @@ static void LL_ATON_Start_EpochBlock_22(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3566896) /* Equivalent hex address = 0x704e6d30UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3566896))) /* Equivalent hex address = 0x704e6d30UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -7424,7 +7408,7 @@ static void LL_ATON_Start_EpochBlock_22(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3543344) /* Equivalent hex address = 0x704e1130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3543344))) /* Equivalent hex address = 0x704e1130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -7599,7 +7583,7 @@ static void LL_ATON_Start_EpochBlock_22(const void *epoch_block)
   /* epoch=22 */
   LL_Switch_Init(switch_init_in_22, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_22_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_22_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -7631,7 +7615,7 @@ static void LL_ATON_End_EpochBlock_22(const void *epoch_block)
   /* epoch=22 */
   LL_Switch_Deinit(switch_deinit_in_22, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_22_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_22_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -7797,7 +7781,7 @@ static void LL_ATON_Start_EpochBlock_23(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3567920) /* Equivalent hex address = 0x704e7130UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3567920))) /* Equivalent hex address = 0x704e7130UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -7848,7 +7832,7 @@ static void LL_ATON_Start_EpochBlock_23(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3545392) /* Equivalent hex address = 0x704e1930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3545392))) /* Equivalent hex address = 0x704e1930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -8011,7 +7995,7 @@ static void LL_ATON_Start_EpochBlock_23(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_66_zero_off_out_169_copy_in_5 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_66_zero_off_out_169_copy_in_5 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 36928,
     .frame_count = 0,
@@ -8119,7 +8103,7 @@ static void LL_ATON_Start_EpochBlock_23(const void *epoch_block)
   /* epoch=23 */
   LL_Switch_Init(switch_init_in_23, 11);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_23_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_23_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -8160,7 +8144,7 @@ static void LL_ATON_End_EpochBlock_23(const void *epoch_block)
   /* epoch=23 */
   LL_Switch_Deinit(switch_deinit_in_23, 11);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_23_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_23_all_units[] = {
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -8269,7 +8253,7 @@ static void LL_ATON_Start_EpochBlock_24(const void *epoch_block)
   /* epoch=24 */
   LL_Switch_Init(switch_init_in_24, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_24_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_24_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 8} }, /* STREAM_ENG_V2 */
   };
@@ -8291,7 +8275,7 @@ static void LL_ATON_End_EpochBlock_24(const void *epoch_block)
   /* epoch=24 */
   LL_Switch_Deinit(switch_deinit_in_24, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_24_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_24_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 8} }, /* STREAM_ENG_V2 */
   };
@@ -8394,7 +8378,7 @@ static void LL_ATON_Start_EpochBlock_25(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3568944) /* Equivalent hex address = 0x704e7530UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3568944))) /* Equivalent hex address = 0x704e7530UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -8445,7 +8429,7 @@ static void LL_ATON_Start_EpochBlock_25(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3547440) /* Equivalent hex address = 0x704e2130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3547440))) /* Equivalent hex address = 0x704e2130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -8620,7 +8604,7 @@ static void LL_ATON_Start_EpochBlock_25(const void *epoch_block)
   /* epoch=25 */
   LL_Switch_Init(switch_init_in_25, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_25_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_25_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -8652,7 +8636,7 @@ static void LL_ATON_End_EpochBlock_25(const void *epoch_block)
   /* epoch=25 */
   LL_Switch_Deinit(switch_deinit_in_25, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_25_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_25_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -8818,7 +8802,7 @@ static void LL_ATON_Start_EpochBlock_26(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3569968) /* Equivalent hex address = 0x704e7930UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3569968))) /* Equivalent hex address = 0x704e7930UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -8869,7 +8853,7 @@ static void LL_ATON_Start_EpochBlock_26(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3549488) /* Equivalent hex address = 0x704e2930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3549488))) /* Equivalent hex address = 0x704e2930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -9032,7 +9016,7 @@ static void LL_ATON_Start_EpochBlock_26(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_73_zero_off_out_187_copy_in_6 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_73_zero_off_out_187_copy_in_6 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 36928,
     .frame_count = 0,
@@ -9140,7 +9124,7 @@ static void LL_ATON_Start_EpochBlock_26(const void *epoch_block)
   /* epoch=26 */
   LL_Switch_Init(switch_init_in_26, 11);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_26_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_26_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -9181,7 +9165,7 @@ static void LL_ATON_End_EpochBlock_26(const void *epoch_block)
   /* epoch=26 */
   LL_Switch_Deinit(switch_deinit_in_26, 11);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_26_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_26_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -9290,7 +9274,7 @@ static void LL_ATON_Start_EpochBlock_27(const void *epoch_block)
   /* epoch=27 */
   LL_Switch_Init(switch_init_in_27, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_27_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_27_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
   };
@@ -9312,7 +9296,7 @@ static void LL_ATON_End_EpochBlock_27(const void *epoch_block)
   /* epoch=27 */
   LL_Switch_Deinit(switch_deinit_in_27, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_27_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_27_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
   };
@@ -9415,7 +9399,7 @@ static void LL_ATON_Start_EpochBlock_28(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3570992) /* Equivalent hex address = 0x704e7d30UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3570992))) /* Equivalent hex address = 0x704e7d30UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -9466,7 +9450,7 @@ static void LL_ATON_Start_EpochBlock_28(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3551536) /* Equivalent hex address = 0x704e3130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3551536))) /* Equivalent hex address = 0x704e3130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -9641,7 +9625,7 @@ static void LL_ATON_Start_EpochBlock_28(const void *epoch_block)
   /* epoch=28 */
   LL_Switch_Init(switch_init_in_28, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_28_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_28_all_units[] = {
     { {STRENG, 7} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -9673,7 +9657,7 @@ static void LL_ATON_End_EpochBlock_28(const void *epoch_block)
   /* epoch=28 */
   LL_Switch_Deinit(switch_deinit_in_28, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_28_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_28_all_units[] = {
     { {STRENG, 7} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -9839,7 +9823,7 @@ static void LL_ATON_Start_EpochBlock_29(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3572016) /* Equivalent hex address = 0x704e8130UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3572016))) /* Equivalent hex address = 0x704e8130UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -9890,7 +9874,7 @@ static void LL_ATON_Start_EpochBlock_29(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3553584) /* Equivalent hex address = 0x704e3930UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3553584))) /* Equivalent hex address = 0x704e3930UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -10053,7 +10037,7 @@ static void LL_ATON_Start_EpochBlock_29(const void *epoch_block)
     .noblk = 0,
     .align_right = 0,
     .nbits_unsigned = 1,
-    .addr_base = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_80_zero_off_out_205_copy_in_7 ca pipe offset=1 */
+    .addr_base = {(unsigned char *)ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL) /* Equivalent hex address = 0x34350000UL */}, /* Conv2D_80_zero_off_out_205_copy_in_7 ca pipe offset=1 */
     .offset_start = 24704,
     .offset_limit = 36928,
     .frame_count = 0,
@@ -10161,7 +10145,7 @@ static void LL_ATON_Start_EpochBlock_29(const void *epoch_block)
   /* epoch=29 */
   LL_Switch_Init(switch_init_in_29, 11);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_29_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_29_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -10202,7 +10186,7 @@ static void LL_ATON_End_EpochBlock_29(const void *epoch_block)
   /* epoch=29 */
   LL_Switch_Deinit(switch_deinit_in_29, 11);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_29_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_29_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
@@ -10311,7 +10295,7 @@ static void LL_ATON_Start_EpochBlock_30(const void *epoch_block)
   /* epoch=30 */
   LL_Switch_Init(switch_init_in_30, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_30_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_30_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
   };
@@ -10333,7 +10317,7 @@ static void LL_ATON_End_EpochBlock_30(const void *epoch_block)
   /* epoch=30 */
   LL_Switch_Deinit(switch_deinit_in_30, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_30_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_30_all_units[] = {
     { {STRENG, 9} }, /* STREAM_ENG_V2 */
     { {STRENG, 2} }, /* STREAM_ENG_V2 */
   };
@@ -10436,7 +10420,7 @@ static void LL_ATON_Start_EpochBlock_31(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3573040) /* Equivalent hex address = 0x704e8530UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3573040))) /* Equivalent hex address = 0x704e8530UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -10487,7 +10471,7 @@ static void LL_ATON_Start_EpochBlock_31(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3555632) /* Equivalent hex address = 0x704e4130UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3555632))) /* Equivalent hex address = 0x704e4130UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -10662,7 +10646,7 @@ static void LL_ATON_Start_EpochBlock_31(const void *epoch_block)
   /* epoch=31 */
   LL_Switch_Init(switch_init_in_31, 6);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_31_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_31_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -10694,7 +10678,7 @@ static void LL_ATON_End_EpochBlock_31(const void *epoch_block)
   /* epoch=31 */
   LL_Switch_Deinit(switch_deinit_in_31, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_31_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_31_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -11169,7 +11153,7 @@ spanning across 4096 bytes */
   /* epoch=32 */
   LL_Switch_Init(switch_init_in_32, 10);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_32_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_32_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
@@ -11209,7 +11193,7 @@ static void LL_ATON_End_EpochBlock_32(const void *epoch_block)
   /* epoch=32 */
   LL_Switch_Deinit(switch_deinit_in_32, 10);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_32_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_32_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {STRENG, 6} }, /* STREAM_ENG_V2 */
     { {CONVACC, 2} }, /* CONV_ACC_V2 */
@@ -11318,7 +11302,7 @@ static void LL_ATON_Start_EpochBlock_33(const void *epoch_block)
   /* epoch=33 */
   LL_Switch_Init(switch_init_in_33, 1);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_33_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_33_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -11340,7 +11324,7 @@ static void LL_ATON_End_EpochBlock_33(const void *epoch_block)
   /* epoch=33 */
   LL_Switch_Deinit(switch_deinit_in_33, 1);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_33_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_33_all_units[] = {
     { {STRENG, 0} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
   };
@@ -11742,7 +11726,7 @@ spanning across 4096 bytes */
   /* epoch=34 */
   LL_Switch_Init(switch_init_in_34, 8);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_34_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_34_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -11778,7 +11762,7 @@ static void LL_ATON_End_EpochBlock_34(const void *epoch_block)
   /* epoch=34 */
   LL_Switch_Deinit(switch_deinit_in_34, 8);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_34_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_34_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 0} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -12205,7 +12189,7 @@ spanning across 4096 bytes */
   /* epoch=35 */
   LL_Switch_Init(switch_init_in_35, 9);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_35_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_35_all_units[] = {
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
@@ -12243,7 +12227,7 @@ static void LL_ATON_End_EpochBlock_35(const void *epoch_block)
   /* epoch=35 */
   LL_Switch_Deinit(switch_deinit_in_35, 9);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_35_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_35_all_units[] = {
     { {STRENG, 4} }, /* STREAM_ENG_V2 */
     { {STRENG, 5} }, /* STREAM_ENG_V2 */
     { {CONVACC, 3} }, /* CONV_ACC_V2 */
@@ -12313,8 +12297,8 @@ static void LL_ATON_Start_EpochBlock_36(const void *epoch_block)
 
 
   /* Unit= 19 [ARITH_ACC_V2 1] */
-  /* kind=Add node=RequantizeLinear_inserted_id414 */
-  static const LL_Arithacc_InitTypeDef RequantizeLinear_inserted_id414_init36 = {
+  /* kind=Add node=RequantizeLinear_inserted_id408 */
+  static const LL_Arithacc_InitTypeDef RequantizeLinear_inserted_id408_init36 = {
     .rounding_x = 0,
     .saturation_x = 0,
     .round_mode_x = 0,
@@ -12358,7 +12342,7 @@ static void LL_ATON_Start_EpochBlock_36(const void *epoch_block)
   };
 
   /* Unit=ARITH_ACC_V2 */
-  LL_Arithacc_Init(1, &RequantizeLinear_inserted_id414_init36);
+  LL_Arithacc_Init(1, &RequantizeLinear_inserted_id408_init36);
 
 
   /* Unit= 21 [ARITH_ACC_V2 3] */
@@ -12482,7 +12466,7 @@ static void LL_ATON_Start_EpochBlock_36(const void *epoch_block)
 
   static const LL_Switch_InitTypeDef switch_init_in_36[] = {
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, STRENG, 5, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* AveragePool_97 IN: in unit=POOL_ACC_V2 0 in port=0 out unit=STREAM_ENG_V2 5 out port=0 */
-    { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* RequantizeLinear_inserted_id414 IN: in unit=ARITH_ACC_V2 1 in port=0 out unit=POOL_ACC_V2 0 out port=0 */
+    { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* RequantizeLinear_inserted_id408 IN: in unit=ARITH_ACC_V2 1 in port=0 out unit=POOL_ACC_V2 0 out port=0 */
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 3, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* Gemm_99_conv_4_suboff_249 IN: in unit=ARITH_ACC_V2 3 in port=0 out unit=ARITH_ACC_V2 1 out port=0 */
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, STRENG, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, ARITH, 3, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* Gemm_99_conv_4_suboff_249 OUT: in unit=STREAM_ENG_V2 1 in port=0 out unit=ARITH_ACC_V2 3 out port=0 */
   };
@@ -12491,7 +12475,7 @@ static void LL_ATON_Start_EpochBlock_36(const void *epoch_block)
   /* epoch=36 */
   LL_Switch_Init(switch_init_in_36, 4);
 
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_36_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_36_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {ARITH, 1} }, /* ARITH_ACC_V2 */
     { {ARITH, 3} }, /* ARITH_ACC_V2 */
@@ -12510,7 +12494,7 @@ static void LL_ATON_End_EpochBlock_36(const void *epoch_block)
 
   static const LL_Switch_DeinitTypeDef switch_deinit_in_36[] = {
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, STRENG, 5, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* AveragePool_97 IN: in unit=POOL_ACC_V2 0 in port=0 out unit=STREAM_ENG_V2 5 out port=0 */
-    { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* RequantizeLinear_inserted_id414 IN: in unit=ARITH_ACC_V2 1 in port=0 out unit=POOL_ACC_V2 0 out port=0 */
+    { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, POOL, 0, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* RequantizeLinear_inserted_id408 IN: in unit=ARITH_ACC_V2 1 in port=0 out unit=POOL_ACC_V2 0 out port=0 */
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, ARITH, 3, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, ARITH, 1, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* Gemm_99_conv_4_suboff_249 IN: in unit=ARITH_ACC_V2 3 in port=0 out unit=ARITH_ACC_V2 1 out port=0 */
     { LL_Switch_Init_Dest() = ATONN_DSTPORT(STRSWITCH, 0, STRENG, 1, 0), LL_Switch_Init_Source(0) = ATONN_SRCPORT(STRSWITCH, 0, ARITH, 3, 0), LL_Switch_Init_Context(0) = 1, LL_Switch_Init_Frames(0) = 0, }, /* Gemm_99_conv_4_suboff_249 OUT: in unit=STREAM_ENG_V2 1 in port=0 out unit=ARITH_ACC_V2 3 out port=0 */
   };
@@ -12519,7 +12503,7 @@ static void LL_ATON_End_EpochBlock_36(const void *epoch_block)
   /* epoch=36 */
   LL_Switch_Deinit(switch_deinit_in_36, 4);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_36_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_36_all_units[] = {
     { {STRENG, 1} }, /* STREAM_ENG_V2 */
     { {ARITH, 1} }, /* ARITH_ACC_V2 */
     { {ARITH, 3} }, /* ARITH_ACC_V2 */
@@ -12631,7 +12615,7 @@ static void LL_ATON_Start_EpochBlock_37(const void *epoch_block)
     .A_scalar = 1,
     .B_scalar = 0,
     .C_scalar = 0,
-    .A_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580672) /* Equivalent hex address = 0x704ea300UL */},
+    .A_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580672))) /* Equivalent hex address = 0x704ea300UL */},
     .B_vector = {0},
     .C_vector = {0},
     .vec_precision = {16, 16, 16},
@@ -12682,7 +12666,7 @@ static void LL_ATON_Start_EpochBlock_37(const void *epoch_block)
     .C_scalar = (short)0,
     .A_vector = {0},
     .B_vector = {0},
-    .C_vector = {(unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580624) /* Equivalent hex address = 0x704ea2d0UL */},
+    .C_vector = {((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580624))) /* Equivalent hex address = 0x704ea2d0UL */},
     .vec_precision = {16, 16, 32},
   };
 
@@ -12808,21 +12792,13 @@ static void LL_ATON_Start_EpochBlock_37(const void *epoch_block)
   /* epoch=37 */
   LL_Switch_Init(switch_init_in_37, 6);
 
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache invalidate (only) operation (HW, whole range) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 32) */
-  mcu_cache_invalidate_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) /* Equivalent hex address = 0x34350000UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 32) /* Equivalent hex address = 0x34350020UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 32))) */
+  LL_ATON_Cache_MCU_Invalidate_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) /* Equivalent hex address = 0x34350000UL */, 32);
 
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
-
-  static LL_ATON_EnableUnits_InitTypeDef Enable_epoch_37_all_units[] = {
+  static const LL_ATON_EnableUnits_InitTypeDef Enable_epoch_37_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -12853,7 +12829,7 @@ static void LL_ATON_End_EpochBlock_37(const void *epoch_block)
   /* epoch=37 */
   LL_Switch_Deinit(switch_deinit_in_37, 6);
 
-  static LL_ATON_DisableUnits_InitTypeDef Disable_epoch_37_all_units[] = {
+  static const LL_ATON_DisableUnits_InitTypeDef Disable_epoch_37_all_units[] = {
     { {STRENG, 3} }, /* STREAM_ENG_V2 */
     { {CONVACC, 1} }, /* CONV_ACC_V2 */
     { {ARITH, 0} }, /* ARITH_ACC_V2 */
@@ -12872,25 +12848,17 @@ static void LL_ATON_End_EpochBlock_37(const void *epoch_block)
 
 static void LL_ATON_End_EpochBlock_38(const void *epoch_block)
 {
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache invalidate (only) operation for unaligned buffer start or end address (only line) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152) */
-  mcu_cache_invalidate_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152) /* Equivalent hex address = 0x34350480UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152))) */
+  LL_ATON_Cache_MCU_Invalidate_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) /* Equivalent hex address = 0x34350440UL */, 64);
 
   LL_ATON_LIB_UNUSED(epoch_block);
 
 
 /* Unit= 27 [PROCESSOR 0] */
-/* kind=DequantizeLinear node=DequantizeLinear_inserted_id416 */
+/* kind=DequantizeLinear node=DequantizeLinear_inserted_id410 */
   Dequantizelinear_sw_info dequantizelinear1_sw_info = {
     /* "general.input" tensor-related info: */
     .general.input.dim.tensor_b = 1,
@@ -12902,14 +12870,14 @@ static void LL_ATON_End_EpochBlock_38(const void *epoch_block)
     .general.input.stride.h = 10,
     .general.input.stride.w = 1,
     .general.input.stride.c = 1,
-    .general.input.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) /* Equivalent hex address = 0x34350000UL */,
+    .general.input.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) /* Equivalent hex address = 0x34350000UL */,
     .general.input.format.is_signed = 1,
     /* "is" tensor-related info: */
-    .is.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580704) /* Equivalent hex address = 0x704ea320UL */,
+    .is.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3580704))) /* Equivalent hex address = 0x704ea320UL */,
     .is.format.is_signed = 0,
     .is.dim.num_elem = 1,
     /* "izp" tensor-related info: */
-    .izp.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3581168) /* Equivalent hex address = 0x704ea4f0UL */,
+    .izp.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x70180000UL + 3581168))) /* Equivalent hex address = 0x704ea4f0UL */,
     .izp.format.is_signed = 1,
     .izp.dim.num_elem = 1,
     /* "general.output" tensor-related info: */
@@ -12922,27 +12890,19 @@ static void LL_ATON_End_EpochBlock_38(const void *epoch_block)
     .general.output.stride.h = 40,
     .general.output.stride.w = 4,
     .general.output.stride.c = 4,
-    .general.output.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */,
+    .general.output.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) /* Equivalent hex address = 0x34350440UL */,
     .general.output.format.is_signed = 0,
     .general.type = LL_SW_DEQUANTIZELINEAR,
   };
 
   /* Low Level SW Layer function invocation. This will exploit EmbedNets libs) */
-  /* Node DequantizeLinear_inserted_id416 mapped on EmbedNets (INTEGER) as DequantizeLinear | Category: Format-Converter */
+  /* Node DequantizeLinear_inserted_id410 mapped on EmbedNets (INTEGER) as DequantizeLinear | Category: Format-Converter */
   ll_sw_forward_dequantizelinear(&dequantizelinear1_sw_info);
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache clean (only) operation (SW, whole range) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152) */
-  mcu_cache_clean_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152) /* Equivalent hex address = 0x34350480UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1152))) */
+  LL_ATON_Cache_MCU_Clean_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) /* Equivalent hex address = 0x34350440UL */, 64);
 
 }
 
@@ -12951,25 +12911,17 @@ static void LL_ATON_End_EpochBlock_38(const void *epoch_block)
 
 static void LL_ATON_End_EpochBlock_39(const void *epoch_block)
 {
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache invalidate (only) operation for unaligned buffer end address (last line) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1056) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) */
-  mcu_cache_invalidate_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1056) /* Equivalent hex address = 0x34350420UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1056))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) */
+  LL_ATON_Cache_MCU_Invalidate_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1056))) /* Equivalent hex address = 0x34350420UL */, 32);
 
   LL_ATON_LIB_UNUSED(epoch_block);
 
 
 /* Unit= 27 [PROCESSOR 0] */
-/* kind=Softmax node=Softmax_102 */
+/* kind=Softmax node=Softmax_100 */
   Softmax_sw_info softmax2_sw_info = {
     /* "general.input" tensor-related info: */
     .general.input.dim.tensor_b = 1,
@@ -12981,7 +12933,7 @@ static void LL_ATON_End_EpochBlock_39(const void *epoch_block)
     .general.input.stride.h = 40,
     .general.input.stride.w = 4,
     .general.input.stride.c = 4,
-    .general.input.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */,
+    .general.input.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) /* Equivalent hex address = 0x34350440UL */,
     .general.input.format.is_signed = 0,
     /* "scratch" tensor-related info: */
     .scratch.dim.tensor_b = 1,
@@ -12993,7 +12945,7 @@ static void LL_ATON_End_EpochBlock_39(const void *epoch_block)
     .scratch.stride.h = 1028,
     .scratch.stride.w = 4,
     .scratch.stride.c = 4,
-    .scratch.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) /* Equivalent hex address = 0x34350000UL */,
+    .scratch.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) /* Equivalent hex address = 0x34350000UL */,
     .scratch.format.is_signed = 1,
     /* "general.output" tensor-related info: */
     .general.output.dim.tensor_b = 1,
@@ -13005,7 +12957,7 @@ static void LL_ATON_End_EpochBlock_39(const void *epoch_block)
     .general.output.stride.h = 40,
     .general.output.stride.w = 4,
     .general.output.stride.c = 4,
-    .general.output.mem.start_offset = (unsigned char *)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1040) /* Equivalent hex address = 0x34350410UL */,
+    .general.output.mem.start_offset = ((unsigned char *)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1040))) /* Equivalent hex address = 0x34350410UL */,
     .general.output.format.is_signed = 1,
     /* Node-specific Hyper-parameters: */
     .axis = 3,
@@ -13013,21 +12965,13 @@ static void LL_ATON_End_EpochBlock_39(const void *epoch_block)
   };
 
   /* Low Level SW Layer function invocation. This will exploit EmbedNets libs) */
-  /* Node Softmax_102 mapped on EmbedNets (FLOAT) as Softmax | Category: Computational */
+  /* Node Softmax_100 mapped on EmbedNets (FLOAT) as Softmax | Category: Computational */
   ll_sw_forward_softmax(&softmax2_sw_info);
-  // Lock MCU cache
-  LL_ATON_LOCK_MCU_CACHE();
-
-#if (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
   /* *** MCU cache clean (only) operation (SW, whole range) *** */
   /*     memory pool: 0 */
-  /*     start: (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) */
-  /*     end:   (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) */
-  mcu_cache_clean_range((uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0) /* Equivalent hex address = 0x34350000UL */, (uintptr_t)__LL_ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088) /* Equivalent hex address = 0x34350440UL */);
-#endif // (LL_ATON_PLATFORM == LL_ATON_PLAT_STM32N6)
-
-  // Un-lock MCU cache
-  LL_ATON_UNLOCK_MCU_CACHE();
+  /*     start: ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) */
+  /*     end:   ((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 1088))) */
+  LL_ATON_Cache_MCU_Clean_Range(((uintptr_t)(ATON_LIB_PHYSICAL_TO_VIRTUAL_ADDR(0x34350000UL + 0))) /* Equivalent hex address = 0x34350000UL */, 1088);
 
 }
 
@@ -16287,7 +16231,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Input_Buffers_Info_Default(void)
       .offset = buff_info_Conv2D_91_weights_inflated_284_quant_offset,
     },
     {
-      .name = "RequantizeLinear_inserted_id414_415_requantize_zero",
+      .name = "RequantizeLinear_inserted_id408_409_requantize_zero",
       .addr_base = {(unsigned char *)(0x70180000UL) /* Equivalent hex address = 0x70180000UL */},
       .offset_start = 3581152,
       .offset_end = 3581153,
@@ -16308,7 +16252,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Input_Buffers_Info_Default(void)
       .shape = buff_info__shape_1_1_1_1,
     },
     {
-      .name = "Gemm_99_squeeze_y_5_424_atonn_internal_scale",
+      .name = "Gemm_99_squeeze_y_5_418_atonn_internal_scale",
       .addr_base = {(unsigned char *)(0x70180000UL) /* Equivalent hex address = 0x70180000UL */},
       .offset_start = 3580704,
       .offset_end = 3580708,
@@ -16329,7 +16273,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Input_Buffers_Info_Default(void)
       .shape = buff_info__shape_1,
     },
     {
-      .name = "Gemm_99_squeeze_y_5_424_atonn_internal_offset",
+      .name = "Gemm_99_squeeze_y_5_418_atonn_internal_offset",
       .addr_base = {(unsigned char *)(0x70180000UL) /* Equivalent hex address = 0x70180000UL */},
       .offset_start = 3581168,
       .offset_end = 3581169,
@@ -16364,7 +16308,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Output_Buffers_Info_Default(void)
   static const uint32_t buff_info__mem_shape_U_1_10[] = { 1, 10 };
   static const LL_Buffer_InfoTypeDef buff_info[] = {
     {
-      .name = "Softmax_102_out_0",
+      .name = "Softmax_100_out_0",
       .addr_base = {(unsigned char *)(0x34350000UL) /* Equivalent hex address = 0x34350000UL */},
       .offset_start = 1040,
       .offset_end = 1080,
@@ -17563,7 +17507,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Internal_Buffers_Info_Default(void)
       .offset = buff_info_Gemm_99_out_0_quant_offset,
     },
     {
-      .name = "Gemm_99_out_0_inserted_out416",
+      .name = "Gemm_99_out_0_inserted_out410",
       .addr_base = {(unsigned char *)(0x34350000UL) /* Equivalent hex address = 0x34350000UL */},
       .offset_start = 1088,
       .offset_end = 1128,
@@ -17584,7 +17528,7 @@ const LL_Buffer_InfoTypeDef *LL_ATON_Internal_Buffers_Info_Default(void)
       .shape = buff_info__shape_1_10,
     },
     {
-      .name = "SCRATCH_Softmax_102_PORT_OUT",
+      .name = "SCRATCH_Softmax_100_PORT_OUT",
       .addr_base = {(unsigned char *)(0x34350000UL) /* Equivalent hex address = 0x34350000UL */},
       .offset_start = 0,
       .offset_end = 1028,

@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file     audio_proc_task.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   
   ******************************************************************************
   * @attention
@@ -41,8 +41,14 @@ void audio_proc_thread_func(ULONG arg)
   bool cont = true;
   AppMsg_t report;
   initAudioProc(&AudioProcTask.ctx);
-  
-  my_printf("\n\r------------- Start Processing -------------------\r\n\n");
+
+  /* acquisition can be started and processing will start */
+  if (TX_SUCCESS != tx_thread_resume(&AudioAcqTask.thread))
+  {
+    /* error */
+  }
+
+  printHeader();
   while(cont)
   {
     if(TX_SUCCESS == tx_queue_receive(&AudioProcTask.queue, &report, TX_WAIT_FOREVER))

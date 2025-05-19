@@ -1,5 +1,5 @@
 #!/bin/bash
-generateCmd="C:/ST/stedgeai-windows-10.0.0-RC1-16-signed/Utilities/windows/stedgeai.exe" 
+generateCmd="<path_to_stedge>/stedgeai.exe" 
 
 "$generateCmd" -m $1 --target stm32n6 --st-neural-art default@user_neural_art.json
 cp ./st_ai_output/network.c .

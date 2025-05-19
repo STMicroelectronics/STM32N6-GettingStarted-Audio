@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2024 STMicroelectronics.
+  * Copyright (c) 2024-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -239,7 +239,7 @@ void NPU_Config(void)
   __HAL_RCC_CACHEAXI_CLK_ENABLE();
   __HAL_RCC_CACHEAXI_FORCE_RESET();
   __HAL_RCC_CACHEAXI_RELEASE_RESET();
-  __HAL_RCC_CACHEAXI_CLK_SLEEP_DISABLE();
+//  __HAL_RCC_CACHEAXI_CLK_SLEEP_DISABLE();
   npu_cache_init();
   
 #ifdef USE_NPU_CACHE
@@ -252,7 +252,7 @@ void NPU_Config(void)
   /* Enable Secure access for NPU */
   master_conf.MasterCID = RIF_CID_1;    // Master CID = 1
   master_conf.SecPriv = RIF_ATTRIBUTE_SEC | RIF_ATTRIBUTE_PRIV; // Priviledged secure
-  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &master_conf);  
+  HAL_RIF_RIMC_ConfigMasterAttributes(RIF_MASTER_INDEX_NPU, &master_conf);
   HAL_RIF_RISC_SetSlaveSecureAttributes(RIF_RISC_PERIPH_INDEX_NPU, RIF_ATTRIBUTE_PRIV | RIF_ATTRIBUTE_SEC);
 }
 

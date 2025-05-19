@@ -2,14 +2,14 @@
   ******************************************************************************
   * @file    preproc_dpu.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   This file is implementing pre-processing functions that are making
   *          use of Audio pre-processing libraries
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -26,9 +26,14 @@
 #include "user_mel_tables.h"
 #include "logging.h"
 #include "mcu_cache.h"
+#ifdef APP_BARE_METAL
+#include "cpu_stats.h"
+#endif
 
 int PreProc_DPUInit(AudioPreProcCtx_t *pCtx)
 {
+	printf("\n\rPreprocessing\n\r");
+	printf(SEPARATION_LINE);
 #if ( CTRL_X_CUBE_AI_PREPROC == CTRL_AI_SPECTROGRAM_LOG_MEL )  
   assert_param(CTRL_X_CUBE_AI_SPECTROGRAM_NFFT >= CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH );
   assert_param(CTRL_X_CUBE_AI_SPECTROGRAM_NFFT >= CTRL_X_CUBE_AI_SPECTROGRAM_NMEL);
@@ -63,7 +68,13 @@ int PreProc_DPUInit(AudioPreProcCtx_t *pCtx)
   pCtx->S_LogMelSpectr.LogFormula         = CTRL_X_CUBE_AI_SPECTROGRAM_LOG_FORMULA;
   pCtx->S_LogMelSpectr.Ref                = 1.0f;
   pCtx->S_LogMelSpectr.TopdB              = HUGE_VALF;
-#elif ( CTRL_X_CUBE_AI_PREPROC == CTRL_AI_STFT ) 
+  printf("MEL spectrogram %d mel x %d col\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_NMEL,CTRL_X_CUBE_AI_SPECTROGRAM_COL);
+  printf("- sampling freq : %u Hz\n\r",(uint32_t)CTRL_X_CUBE_AI_SENSOR_ODR);
+  printf("- acq period    : %u ms\n\r",(uint32_t)CTRL_X_CUBE_AI_ACQ_LENGTH_MS);
+  printf("- window length : %u samples\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH);
+  printf("- hop length    : %u samples\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_HOP_LENGTH);
+
+ #elif ( CTRL_X_CUBE_AI_PREPROC == CTRL_AI_STFT )
   assert_param(CTRL_X_CUBE_AI_SPECTROGRAM_NFFT >= CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH );
   uint32_t pad = CTRL_X_CUBE_AI_SPECTROGRAM_NFFT - CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH;
 
@@ -95,11 +106,16 @@ int PreProc_DPUInit(AudioPreProcCtx_t *pCtx)
   pCtx->S_STFT_b_extra.pNorm               = &pCtx->AudioNorm ;
   pCtx->AudioNorm.minThreshold             = 2000;
 
+  printf("STFT %u x %u\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_NFFT/2 + 1,CTRL_X_CUBE_AI_SPECTROGRAM_COL);
+  printf("- sampling freq : %lu Hz\n\r",(uint32_t)CTRL_X_CUBE_AI_SENSOR_ODR);
+  printf("- acq period    : %lu ms\n\r",CTRL_X_CUBE_AI_ACQ_LENGTH_MS);
+  printf("- window length : %u samples\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH);
+  printf("- hop length    : %u samples\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_HOP_LENGTH);
+  printf("- overlap       : %u + %u columns\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL,CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL);
 #endif /* ( CTRL_X_CUBE_AI_PREPROC == CTRL_AI_STFT )*/
 
   return 0;
 }
-
 
 int PreProc_DPU(AudioPreProcCtx_t * pxCtx, uint8_t *pDataIn, int8_t *p_spectro)
 {
@@ -107,7 +123,9 @@ int PreProc_DPU(AudioPreProcCtx_t * pxCtx, uint8_t *pDataIn, int8_t *p_spectro)
   assert_param(pDataIn != NULL);
   assert_param(p_spectro != NULL);
 
-  ARM_PMU_CYCCNT_Reset();
+#ifdef APP_BARE_METAL
+  port_dwt_reset();
+#endif
 
 #if (CTRL_X_CUBE_AI_PREPROC==CTRL_AI_SPECTROGRAM_LOG_MEL )
   int8_t  out[CTRL_X_CUBE_AI_SPECTROGRAM_NMEL];
@@ -132,9 +150,9 @@ int PreProc_DPU(AudioPreProcCtx_t * pxCtx, uint8_t *pDataIn, int8_t *p_spectro)
 		  (CTRL_X_CUBE_AI_SPECTROGRAM_NFFT/2 + 1) * CTRL_X_CUBE_AI_SPECTROGRAM_COL )) ;
 #endif /* (CTRL_X_CUBE_AI_PREPROC==CTRL_AI_STFT) */  
 
-  uint64_t cycles = ARM_PMU_Get_CCNTR();
-  uint32_t t_us = (cycles * 1000 * 1000) / HAL_RCC_GetCpuClockFreq();
-  LogDebug("F16 preproc  %d us (%d cycles)\r\n", t_us,(uint32_t)cycles);
+#ifdef APP_BARE_METAL
+  time_stats_store(TIME_STAT_PRE_PROC,port_dwt_get_cycles()*1000.0F/port_hal_get_cpu_freq());
+#endif
 
   return 1;
 }

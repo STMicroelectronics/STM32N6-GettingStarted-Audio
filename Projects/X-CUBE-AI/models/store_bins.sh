@@ -1,10 +1,10 @@
 #!\bin\bash
 
-pathCubeIde="C:/ST/STM32CubeIDE_1.17.0.24RC2/STM32CubeIDE"
-pathProg="/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.win32_2.2.0.202409170845/tools/bin"
+pathCubeIde="<PathtoCube IDE>"
+pathProg="/plugins/<cube programmer plug-in>/tools/bin"
 
 sign=$pathCubeIde$pathProg"/STM32_SigningTool_CLI.exe"
-
+echo $ 
 source build-firmware.sh BM
 source build-firmware.sh BM_LP
 source build-firmware.sh TX

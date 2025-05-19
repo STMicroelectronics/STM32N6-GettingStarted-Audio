@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    audio_bm.h
   * @author  GPM/AIS Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   
   ******************************************************************************
   * @attention
@@ -74,14 +74,15 @@ extern void AudioCapture_half_buf_cb(AudioCapture_ring_buff_t *pHdle,\
                                       int16_t *pData, uint8_t half_buf);
 extern void printInferenceResults(const LL_Buffer_InfoTypeDef* pBuffRes);
 extern void toggle_audio_proc(void);
+extern void printHeader(void);
 #if (CTRL_X_CUBE_AI_AUDIO_OUT==COM_TYPE_HEADSET)
 extern void stopAudioPlayBack(void);
-#endif
+#endif /* CTRL_X_CUBE_AI_AUDIO_OUT */
 #ifdef APP_LP
 extern void NPU_SRAM_on(void);
 extern void NPU_SRAM_off(void);
 extern void NPU_on(void);;
 extern void NPU_off(void);
-#endif
+#endif /* APP_LP */
 
 #endif /* __APP_AUDIO_BM_H__ */

@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    ai_model_config.h
   * @author  STMicroelectronics - AIS - MCD Team
-  * @version $Version$
-  * @date    $Date$
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   Configure the getting started functionality
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -54,9 +54,9 @@ extern "C" {
 #define CTRL_X_CUBE_AI_SPECTROGRAM_SILENCE_THR   (3000.0F) /* 0 means disabled */
 #define CTRL_X_CUBE_AI_OOD_THR                   (0.5F)
 #define CTRL_X_CUBE_AI_SPECTROGRAM_WIN           (user_win)
-#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_LUT       (user_melFilterLut)
-#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_START_IDX (user_melFilterStartIndices)
-#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_STOP_IDX  (user_melFilterStopIndices)
+#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_LUT       (user_melFiltersLut)
+#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_START_IDX (user_melFiltersStartIndices)
+#define CTRL_X_CUBE_AI_SPECTROGRAM_MEL_STOP_IDX  (user_melFiltersStopIndices)
 
 #define CTRL_SEQUENCE                            {CTRL_CMD_PARAM_AI,0}
 #ifdef __cplusplus

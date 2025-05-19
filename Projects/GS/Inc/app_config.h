@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    app_config.h
   * @author  GPM/AIS Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   APP configuration
   ******************************************************************************
   * @attention
@@ -25,13 +25,13 @@
 //#define LOG_LEVEL LOG_DEBUG
 #define LOG_LEVEL LOG_INFO
 
-#define INIT_TASK_CFG_HEAP_SIZE (20*1024)
+#define INIT_TASK_CFG_HEAP_SIZE (60*1024)
 
 #define INIT_THREAD_STACK_SIZE (4*1024)
 #define INIT_THREAD_PRIO (0)
 
 #define AUDIO_PROC_THREAD_PRIO (TX_MAX_PRIORITIES-3)
-#define AUDIO_PROC_THREAD_STACK_SIZE (4*1024)
+#define AUDIO_PROC_THREAD_STACK_SIZE (44*1024)
 #define AUDIO_PROC_THREAD_IN_QUEUE_LENGTH (10U)
 #define AUDIO_PROC_THREAD_IN_QUEUE_ITEM_SIZE (sizeof(AppMsg_t))
 #define AUDIO_PROC_THREAD_IN_QUEUE_SIZE (AUDIO_PROC_THREAD_IN_QUEUE_LENGTH)*(AUDIO_PROC_THREAD_IN_QUEUE_ITEM_SIZE)
@@ -63,9 +63,12 @@
 
 #ifdef APP_BARE_METAL 
 #define APP_CONF_STR "Bare Metal"
+#define CPU_STATS
 #else
 #define APP_CONF_STR "RTOS"
 #endif
+
+#define SEPARATION_LINE "------------------------------------------------------------\n\r"
 
 #define USE_NPU_CACHE 1
 /*

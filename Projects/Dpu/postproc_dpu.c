@@ -2,14 +2,14 @@
   ******************************************************************************
   * @file    postproc_dpu.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   This file is implementing post-processing functions that are making
   *          use of Audio post-processing libraries
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -27,7 +27,9 @@
 #include "user_mel_tables.h"
 #include "logging.h"
 #include "mcu_cache.h"
-
+#ifdef APP_BARE_METAL
+#include "cpu_stats.h"
+#endif
 /* Private define ------------------------------------------------------------*/
 #define CPLX_SPECTRUM_LEN ((CTRL_X_CUBE_AI_SPECTROGRAM_NFFT/2 + 1) * 2 * CTRL_X_CUBE_AI_SPECTROGRAM_COL)
 #define SPECTRUM_MASK_LEN ((CTRL_X_CUBE_AI_SPECTROGRAM_NFFT/2 + 1) * CTRL_X_CUBE_AI_SPECTROGRAM_COL)
@@ -40,6 +42,8 @@
   */
 int PostProc_DPUInit(AudioPostProcCtx_t *pCtx)
 {
+	printf("\n\rPostprocessing\n\r");
+	printf(SEPARATION_LINE);
 #if (CTRL_X_CUBE_AI_POSTPROC==CTRL_AI_ISTFT)
 	  assert_param(CTRL_X_CUBE_AI_SPECTROGRAM_NFFT >= CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH );
 	  uint32_t pad = CTRL_X_CUBE_AI_SPECTROGRAM_NFFT - CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH;
@@ -64,10 +68,14 @@ int PostProc_DPUInit(AudioPostProcCtx_t *pCtx)
 	  pCtx->S_iSTFT_b.idxPos                    = 0;
 	  pCtx->S_iSTFT_b.transposeMask             = E_SPECTROGRAM_TRANSPOSE; // or E_SPECTROGRAM_TRANSPOSE_NO
 	  pCtx->S_iSTFT_b.transposeSigIn            = E_SPECTROGRAM_CPLX_FFT_TRANSPOSE; // or E_SPECTROGRAM_CPLX_FFT
+
+	  printf("iSTFT %d  x %d\n\r",CTRL_X_CUBE_AI_SPECTROGRAM_NFFT/2 + 1,CTRL_X_CUBE_AI_SPECTROGRAM_COL);
+#else
+ 	printf("None\n\r");
 #endif
+ 	printf("\n\r");
   return 0;
 }
-
 /**
   * @brief  run post processing DPU
   * @param  pxCtx pointer to post processing context
@@ -86,7 +94,9 @@ int PostProc_DPU(AudioPostProcCtx_t *pxCtx, PREPROC_FLOAT_T *pDataIn, float32_t 
 #if (CTRL_X_CUBE_AI_POSTPROC==CTRL_AI_ISTFT)
   POSTPROC_FLOAT_T * pMaskPostIn = (POSTPROC_FLOAT_T *) pSpecMask;
 
-  ARM_PMU_CYCCNT_Reset();
+#ifdef APP_BARE_METAL
+  port_dwt_reset();
+#endif
 
   for (int i = 0 ; i < SPECTRUM_MASK_LEN; i ++ )
   {
@@ -97,9 +107,10 @@ int PostProc_DPU(AudioPostProcCtx_t *pxCtx, PREPROC_FLOAT_T *pDataIn, float32_t 
 
   mcu_cache_clean_invalidate_range((uint32_t)pSpecMask,(uint32_t)(pSpecMask+\
                                                           SPECTRUM_MASK_LEN )) ;
-  uint64_t cycles = ARM_PMU_Get_CCNTR();
-  uint32_t t_us = (cycles * 1000 * 1000) / HAL_RCC_GetCpuClockFreq();
-  LogDebug("F16 postproc %d us (%d cycles)\r\n", t_us,(uint32_t)cycles);
+#ifdef APP_BARE_METAL
+  time_stats_store(TIME_STAT_POST_PROC,port_dwt_get_cycles()*1000.0F/port_hal_get_cpu_freq());
+#endif /* APP_BARE_METAL */
+
 #endif /* (CTRL_X_CUBE_AI_POSTPROC==CTRL_AI_ISTFT) */
 
   return 0;

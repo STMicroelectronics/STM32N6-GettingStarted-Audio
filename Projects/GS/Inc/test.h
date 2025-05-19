@@ -3,8 +3,8 @@
   * @file    test.h
   * @author  MCD Application Team
   * @brief   Header for main.c module
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   ******************************************************************************
   * @attention
   *

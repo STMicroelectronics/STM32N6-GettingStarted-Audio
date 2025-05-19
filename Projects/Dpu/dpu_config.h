@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    dpu_config.h
   * @author  STMicroelectronics - AIS - MCD Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   Configure the getting started functionality
   *
   * Each logic module of the application should define a DEBUG control byte
@@ -12,7 +12,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2023-2025 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -163,6 +163,9 @@ extern "C" {
 #ifndef CTRL_X_CUBE_AI_AUDIO_OUT_DB_THRESHOLD
 #define CTRL_X_CUBE_AI_AUDIO_OUT_DB_THRESHOLD (-100)
 #endif
+
+#define CTRL_X_CUBE_AI_ACQ_LENGTH (CTRL_X_CUBE_AI_SPECTROGRAM_COL_NO_OVL*CTRL_X_CUBE_AI_SPECTROGRAM_HOP_LENGTH)
+#define CTRL_X_CUBE_AI_ACQ_LENGTH_MS (uint32_t)(1000.0F * (float) CTRL_X_CUBE_AI_ACQ_LENGTH / (float) CTRL_X_CUBE_AI_SENSOR_ODR )
 
 #ifdef __cplusplus
 }

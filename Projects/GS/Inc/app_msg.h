@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    app_msg.h
   * @author  GPM/AIS Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   APP configuration
   ******************************************************************************
   * @attention

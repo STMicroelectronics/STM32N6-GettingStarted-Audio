@@ -1,24 +1,25 @@
-/********************************************************************************
-* @file    ai_model_config.h
-* @author  STMicroelectronics - AIS - MCD Team
-* @version 1.0.0
-* @date    2024-Nov-25
-* @brief   Configure the getting started functionality
-*
-*  Each logic module of the application should define a DEBUG control byte
-* used to turn on/off the log for the module.
-*
-*********************************************************************************
-* @attention
-*
-* Copyright (c) 2022 STMicroelectronics
-* All rights reserved.
-*
-* This software is licensed under terms that can be found in the LICENSE file in
-* the root directory of this software component.
-* If no LICENSE file comes with this software, it is provided AS-IS.
-*********************************************************************************
-*/
+/**
+  ******************************************************************************
+  * @file    ai_model_config.h
+  * @author  STMicroelectronics - AIS - MCD Team
+  * @version V2.0.0
+  * @date    02-May-2025
+  * @brief   Configure the getting started functionality
+  *
+  *  Each logic module of the application should define a DEBUG control byte
+  * used to turn on/off the log for the module.
+  *
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2022-2025 STMicroelectronics
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file in
+  * the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  ******************************************************************************
+  */
 /* ---------------    Generated code    ----------------- */
 #ifndef AI_MODEL_CONFIG_H
 #define AI_MODEL_CONFIG_H

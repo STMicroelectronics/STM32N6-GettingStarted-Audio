@@ -1,10 +1,4 @@
----
-pagetitle: Audio Getting Start Package for N6 
-lang: en
-header-includes: <link rel="icon" type="image/x-icon" href="_htmresc/favicon.png" />
----
-
-# Audio Getting Start Package
+# Audio Getting Started Package
 
 This project provides an STM32 Microcontroler embedded real time environement
 to execute [X-CUBE-AI](https://www.st.com/en/embedded-software/x-cube-ai.html)
@@ -14,8 +8,6 @@ preprocessing step that typically would perform a first level of feature
 extraction, the machine learning inference itself, and a post processing step
 before exposing the results to the user in real time. The project implements
 both RTOS and bare metal versions. A low power version is also provided.
-
-Please refer to this short [readme](./README_ModelZoo.md) for the specific management of the STM32N6 audio application code.
 
 ## Keywords
 
@@ -94,8 +86,8 @@ this serial link is such:
 
 ### Toolchains support
 
-- STM32CubeIDE v1.17
-- STM32Cube.AI v10.0.0
+- STM32CubeIDE v1.18.1
+- STEdgeAI v2.1
 
 ## Quickstart using prebuilt binaries
 
@@ -127,8 +119,8 @@ following procedure:
 
   1. Switch BOOT1 switch to right position
   2. Program `Binaries/fsbl_fw_lrun_v1.2.0.bin` (First stage boot loader @0x70000000 )
-  3. Program `Binaries/[aed,bm]_weights.bin` (params of the networks @0x70180000; To be changed only when the network is changed)
-  4. Program `Binaries/[aed,bm]_[bm,tx]_[lp].bin` (signed firmware application @0x70100000)
+  3. Program `Binaries/[aed,se]_weights.bin` (params of the networks @0x70180000; To be changed only when the network is changed)
+  4. Program `Binaries/[aed,se]_[bm,tx]_[lp].bin` (signed firmware application @0x70100000)
   5. Switch BOOT1 switch to Left position
   6. Power cycle the board
 
@@ -148,15 +140,17 @@ Afer setting BOOT1 switch to the left position, and power cycle, here is the
 typical output seen on the uart console (baud rate = 14400):
 
 ```text
-System configuration (Bare Metal)
---------------------------------------------------
+------------------------------------------------------------
+        System configuration (Bare Metal)
+------------------------------------------------------------
+
 Log Level: Info
 
-Compiled with GCC 12.3.1
+Compiled with GCC 13.3.1
 STM32 device configuration...
  Device       : DevID:0x0486 (STM32N6) RevID:0x0000
  Core Arch.   : M55 - FPU  used
- HAL version  : 0x01000000
+ HAL version  : 0x01010000
  SYSCLK clock : 600 MHz
  HCLK clock   : 400 MHz
  CACHE conf.  : $I/$D=(True,True)
@@ -166,7 +160,7 @@ NPU Runtime configuration...
  NIC clock    : 800 MHz
 
 ATONN Model
---------------------------------------------------
+------------------------------------------------------------
  name          : network
  n_epochs      : 39
  params        : 0 KiB
@@ -177,16 +171,34 @@ ATONN Model
   type   : 3 shape(4)=(1,64,96,1)
   quant  : scale=0.030531, zp=33
  n_outputs     : 1
- name    : Softmax_102_out_0
+ name    : Softmax_100_out_0
   addr   : 0x34350410 (40 bytes)  (32 bits)
   type   : 1 shape(4)=(1,1,1,10)
 
-------------- Start Processing -------------------
+Preprocessing
+------------------------------------------------------------
+MEL spectrogram 64 mel x 96 col
+- sampling freq : 16000 Hz
+- acq period    : 960 ms
+- window length : 400 samples
+- hop length    : 160 samples
 
+Postprocessing
+------------------------------------------------------------
+None
+
+------------------------------------------------------------
+# Start Processing
+------------------------------------------------------------
+                    | Frame   |  Cpu  |  Pre |  AI  | Post |
+                    | 7       |  1.98%|  0.71|  1.26|  0.00|
 {"class":"clock_tick"}
+                    | 8       |  1.98%|  0.71|  1.26|  0.00|
 {"class":"clock_tick"}
+                    | 9       |  1.98%|  0.71|  1.26|  0.00|
+{"class":"sneezing"}
+                    | 10      |  1.98%|  0.71|  1.26|  0.00|
 {"class":"clock_tick"}
-{"class":"unknown"}
 ```
 
 Two extra features are implemented:
@@ -499,7 +511,7 @@ is typically an Hanning window the table is named with the following defines:
 ```C
 #define CTRL_X_CUBE_AI_SPECTROGRAM_WIN           (user_win)
 ```
-
+Cube FW
 For real time processing you need to specify how mamy columns needs to be
 computed, and how many columns needs to overlap to between two patchs to
 mitigate inter patch.
@@ -529,7 +541,14 @@ processing chain:
 
 ## History
 
-### V1.0 Initial Version
+### V2.0.0 maintenance
+
+- upgraded to
+  - Cube Firmware 1.1
+  - STEdge AI 2.1
+  - STM32CUBEIDE 1.18.1
+
+### V1.0.0 Initial Version
 
 - First release of getting started exposing:
   - Audio Event Detection

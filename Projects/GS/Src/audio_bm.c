@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    audio_bm.c
   * @author  MCD Application Team
-  * @version V1.0.0
-  * @date    25-November-2024
+  * @version V2.0.0
+  * @date    02-May-2025
   * @brief   
   ******************************************************************************
   * @attention
@@ -28,6 +28,9 @@
 #ifdef APP_DVFS
 #include "pm_dvfs.h"
 #endif
+#ifdef CPU_STATS
+#include "cpu_stats.h"
+#endif
 #include "AudioCapture_ring_buff.h"
 #include "preproc_dpu.h"                           /* Preprocessing includes  */
 #include "postproc_dpu.h"                          /* Postprocessing includes */
@@ -36,7 +39,7 @@
 #include "audio_bm.h"
 
 /* Private define ------------------------------------------------------------*/
-#define AUDIO_ACQ_LEN     (CTRL_X_CUBE_AI_SPECTROGRAM_COL_NO_OVL*CTRL_X_CUBE_AI_SPECTROGRAM_HOP_LENGTH)
+#define AUDIO_ACQ_LEN     (CTRL_X_CUBE_AI_ACQ_LENGTH)
 #if (CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL > 0)
 #define AUDIO_ACQ_OFFSET  ((CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL*2 -1)*CTRL_X_CUBE_AI_SPECTROGRAM_HOP_LENGTH+CTRL_X_CUBE_AI_SPECTROGRAM_WINDOW_LENGTH)
 #else
@@ -53,6 +56,10 @@ static void SleepClks_init(void);
 static void Error_Handler(void);  
 static void Record_Init(void);
 static void NPU_SettingsLog(void);
+
+#ifdef CPU_STATS
+static void printCpuStats(void);
+#endif
 
 #if (CTRL_X_CUBE_AI_AUDIO_OUT==COM_TYPE_HEADSET)
 static void initAudioPlayBack(AudioBM_play_back_t *ctx_ptr);
@@ -131,12 +138,12 @@ void init_bm(void)
 void exec_bm(void)
 {
   bool cont = true;
+  time_stats_init();
 
   initAudioProc(&audio_proc_ctx);
   initAudioCapture(&audio_acq_ctx);
   startAudioCapture(&audio_acq_ctx);
-
-  my_printf("\r\n------------- Start Processing -------------------\r\n\n");
+  printHeader();
 
   while(cont)
   {
@@ -149,6 +156,9 @@ void exec_bm(void)
      if (audio_acq_ctx.ring_buff.availableSamples >= AUDIO_ACQ_LEN)
      {
         cont = audio_process(&audio_acq_ctx,&audio_proc_ctx);
+#ifdef CPU_STATS
+        printCpuStats();
+#endif
      }
   }
   stopAudioCapture();
@@ -158,7 +168,7 @@ void exec_bm(void)
 #endif
 
   test_dump();
-  my_printf("\n\r-------------- End Processing --------------------\n\r\n\r");
+  my_printf("\n\r# End Processing\n\r");
 }
 #endif
 /**
@@ -235,7 +245,7 @@ bool audio_process(AudioBM_acq_t * acq_ctx_ptr,AudioBM_proc_t * proc_ctx_ptr)
 
 #ifdef APP_LP      
   NPU_on();
-#endif
+#endif /* APP_LP */
   /* AI processing */
   AiDPUProcess(&proc_ctx_ptr->aiCtx);
 
@@ -258,7 +268,7 @@ bool audio_process(AudioBM_acq_t * acq_ctx_ptr,AudioBM_proc_t * proc_ctx_ptr)
 
 #ifdef APP_LP
   NPU_off();
-#endif
+#endif /* APP_LP */
 
 #ifdef APP_DVFS 
   pm_set_opp_min(OPP_MIN);
@@ -377,7 +387,8 @@ void NPU_off(void)
   __HAL_RCC_XSPI2_CLK_DISABLE();
 }
 
-#endif
+#endif /* APP_LP */
+
 #ifdef APP_DVFS
 /**
   * @brief Initialize the UART MSP.
@@ -410,6 +421,38 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 }
 #endif /* APP_DVFS */
 
+void printHeader(void)
+{
+	my_printf(SEPARATION_LINE);
+	my_printf("# Start Processing\n\r");
+	my_printf(SEPARATION_LINE);
+
+#if (CTRL_X_CUBE_AI_AUDIO_OUT==COM_TYPE_HEADSET)
+	my_printf("| Vu meter          ");
+#else
+	my_printf("                    ");
+#endif
+#ifdef CPU_STATS
+	my_printf("| Frame   |  Cpu  |  Pre |  AI  | Post |");
+#endif
+	my_printf("\r\n");
+}
+
+#ifdef CPU_STATS
+void printCpuStats(void)
+{
+	/* display real time statistics */
+	float pre_load = 100 * time_stats_get_avg(TIME_STAT_PRE_PROC)/CTRL_X_CUBE_AI_ACQ_LENGTH_MS;
+	float ai_load = 100 * time_stats_get_avg(TIME_STAT_AI_PROC)/CTRL_X_CUBE_AI_ACQ_LENGTH_MS;
+	float post_load = 100 * time_stats_get_avg(TIME_STAT_POST_PROC)/CTRL_X_CUBE_AI_ACQ_LENGTH_MS;
+#if (CTRL_X_CUBE_AI_AUDIO_OUT!=COM_TYPE_HEADSET)
+	my_printf("                    ");
+#endif
+	printf ("| %-8d|%6.2f%%|%6.2f|%6.2f|%6.2f|\r",time_stats_get_cnt(TIME_STAT_AI_PROC),pre_load+ai_load+post_load,pre_load, ai_load, post_load);
+	fflush(stdout);
+}
+#endif
+
 #if (CTRL_X_CUBE_AI_MODE_OUTPUT_1 == CTRL_AI_CLASS_DISTRIBUTION )
 /**
 * @brief  Displays Inference processing outputs
@@ -437,14 +480,20 @@ void printInferenceResults(const LL_Buffer_InfoTypeDef* pBuffRes)
       max_out = nn_out[i];
     }
   }
+#ifdef CPU_STATS
+   my_printf("\r\n");
+#endif
+
   if (max_out > CTRL_X_CUBE_AI_OOD_THR )
   {
-    my_printf("{\"class\":\"%s\"}\r\n",sAiClassLabels[max_idx]);
+    my_printf("{\"class\":\"%s\"}",sAiClassLabels[max_idx]);
   }
   else
   {
-    my_printf("{\"class\":\"%s\"}\r\n","unknown");
+    my_printf("{\"class\":\"%s\"}","unknown");
   }
+  my_printf("\r\n");
+
 }
 
 #endif
@@ -456,21 +505,23 @@ void printInferenceResults(const LL_Buffer_InfoTypeDef* pBuffRes)
 */
 void displaySystemSetting(void)
 {
-  my_printf("\r\nSystem configuration (%s)",APP_CONF_STR);
-  my_printf("\r\n--------------------------------------------------");
-  printf("\r\nLog Level: %s\r\n\n", getLogLevelStr(LOG_LEVEL)); 
+  my_printf("\n\r");
+  my_printf(SEPARATION_LINE);
+  my_printf("        System configuration (%s)\n\r",APP_CONF_STR);
+  my_printf(SEPARATION_LINE);
+  printf("\n\rLog Level: %s\n\n\r", getLogLevelStr(LOG_LEVEL));
   systemSettingLog();
   NPU_SettingsLog();
 #if defined (APP_DVFS) || defined (APP_LP)
   my_printf("\r\nLow Power Options:");
 #ifdef APP_LP
   my_printf("\r\n DPS");
-#endif 
+#endif /* APP_LP */
 #ifdef APP_DVFS  
   my_printf("\r\n DFVS");
-#endif
+#endif /* APP_DFVS */
   my_printf("\r\n");
-#endif
+#endif /* APP_DVFS || APP_LP */
 }
 
 void toggle_audio_proc(void)
@@ -684,7 +735,7 @@ static void Int_Mem_Config(void)
   __HAL_RCC_AHBSRAM2_MEM_CLK_DISABLE();
   __HAL_RCC_BKPSRAM_MEM_CLK_DISABLE();
 
-#else
+#else /* APP_LP */
 
   RCC->MEMENR |= RCC_MEMENR_AXISRAM3EN | RCC_MEMENR_AXISRAM4EN | RCC_MEMENR_AXISRAM5EN | RCC_MEMENR_AXISRAM6EN;
   RCC->MEMENR |= RCC_MEMENR_CACHEAXIRAMEN; 
