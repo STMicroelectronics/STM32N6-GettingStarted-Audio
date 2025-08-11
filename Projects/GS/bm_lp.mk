@@ -18,8 +18,11 @@ $(BUILD_DIR_BM_LP)/%.o: %.c | $(BUILD_DIR_BM_LP)
 $(BUILD_DIR_BM_LP)/%.o: %.s | $(BUILD_DIR_BM_LP)
 	$(AS) -c "$<" $(AS_FLAGS_BM_LP) -o "$@"  
 
-$(BUILD_DIR_BM_LP)/$(TARGET).elf: $(OBJECTS_BM_LP) | $(BUILD_DIR_BM_LP)
-	$(CC) $(OBJECTS_BM_LP) $(LD_FLAGS_BM_LP) -o "$@"
+$(BUILD_DIR_BM_LP)/bm_lp.list: $(OBJECTS_BM_LP)
+	$(file > $@, $(OBJECTS_BM_LP))
+
+$(BUILD_DIR_BM_LP)/$(TARGET).elf: $(BUILD_DIR_BM_LP)/bm_lp.list | $(BUILD_DIR_BM_LP)
+	$(CC) @$(BUILD_DIR_BM_LP)/bm_lp.list $(LD_FLAGS_BM_LP) -o "$@"
 	$(SZ) $@
 
 $(BUILD_DIR_BM_LP)/%.bin: $(BUILD_DIR_BM_LP)/%.elf

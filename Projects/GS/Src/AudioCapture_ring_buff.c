@@ -29,6 +29,8 @@
 #include "audio_bm.h"
 #ifndef APP_BARE_METAL
 #include "audio_acq_task.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 #endif
 
 /**
@@ -118,49 +120,51 @@ uint8_t *AudioCapture_ring_buff_consume_no_cpy(AudioCapture_ring_buff_t *pHdle, 
   return pDestData;
 }
 
-/**
-  * @brief  Update read index of data bufer as function of given number of samples and returns new data pointer
-  * @param  output buffer
-  * @param  Handler of the ring buffer
-  * @param  number of samples
-  * @retval data pointer
-  */
 uint8_t *AudioCapture_ring_buff_consume(uint8_t *pData, AudioCapture_ring_buff_t *pHdle, uint32_t nbSamples)
 {
-  int32_t  s32_nbSamples = (int32_t)nbSamples;
-  uint32_t u32_nbSamples = (int32_t)nbSamples;
+    int32_t  s32_nbSamples = (int32_t)nbSamples;
+    uint32_t u32_nbSamples = (uint32_t)nbSamples;
 
 #ifdef APP_BARE_METAL
-  __disable_irq();
+    __disable_irq();
 #else
-  tx_mutex_get(&AudioAcqTask.lock, TX_WAIT_FOREVER);
-#endif
-  if (pHdle->availableSamples >= s32_nbSamples)
-  {
-    uint32_t bps    = pHdle->nbBytesPerSample;
-    uint32_t idx    = pHdle->readSampleIndex;
-    uint32_t idxMax = pHdle->nbSamples * pHdle->nbFrames;
-    uint32_t toRead = u32_nbSamples < (idxMax- idx) ? u32_nbSamples: idxMax - idx;
-    memcpy(pData, pHdle->pData + idx*bps ,toRead * bps);
-    uint32_t read = toRead;
-    toRead = u32_nbSamples - toRead ;
-    pHdle->readSampleIndex += u32_nbSamples;
-    if (toRead)
+    // Acquire the mutex, block indefinitely
+    if (xSemaphoreTake(AudioAcqTask.lock, portMAX_DELAY) != pdTRUE)
     {
-        memcpy(pData + read*bps, pHdle->pData,toRead*bps);
-        pHdle->readSampleIndex = toRead;
+        // Optional: handle error if mutex not acquired
     }
-    atomic_add(&pHdle->availableSamples, -s32_nbSamples);
-  }
-#ifdef APP_BARE_METAL
-  __enable_irq();
-#else
-  tx_mutex_put(&AudioAcqTask.lock);
 #endif
 
-  return pData;
-}
+    if (pHdle->availableSamples >= s32_nbSamples)
+    {
+        uint32_t bps    = pHdle->nbBytesPerSample;
+        uint32_t idx    = pHdle->readSampleIndex;
+        uint32_t idxMax = pHdle->nbSamples * pHdle->nbFrames;
+        uint32_t toRead = u32_nbSamples < (idxMax - idx) ? u32_nbSamples : idxMax - idx;
 
+        memcpy(pData, pHdle->pData + idx * bps, toRead * bps);
+        uint32_t read = toRead;
+        toRead = u32_nbSamples - toRead;
+        pHdle->readSampleIndex += u32_nbSamples;
+
+        if (toRead)
+        {
+            memcpy(pData + read * bps, pHdle->pData, toRead * bps);
+            pHdle->readSampleIndex = toRead;
+        }
+
+        atomic_add(&pHdle->availableSamples, -s32_nbSamples);
+    }
+
+#ifdef APP_BARE_METAL
+    __enable_irq();
+#else
+    // Release the mutex
+    xSemaphoreGive(AudioAcqTask.lock);
+#endif
+
+    return pData;
+}
 /**
 * @brief  write new data inside buffer, update write index as function of given number of samples
 * @param  Handler of the ring buffer
@@ -170,46 +174,52 @@ uint8_t *AudioCapture_ring_buff_consume(uint8_t *pData, AudioCapture_ring_buff_t
 */
 void AudioCapture_ring_buff_feed(AudioCapture_ring_buff_t *pHdle, uint8_t *pData, int16_t nbSamples)
 {
-  int32_t s32_nbSamples = (int32_t)nbSamples;
-  uint32_t u32_nbSamples = (uint32_t)nbSamples;
+    int32_t s32_nbSamples = (int32_t)nbSamples;
+    uint32_t u32_nbSamples = (uint32_t)nbSamples;
 
 #ifdef APP_BARE_METAL
-  __disable_irq();
+    __disable_irq();
 #else
-  tx_mutex_get(&AudioAcqTask.lock, TX_WAIT_FOREVER);
+    // Take the mutex, wait indefinitely
+    if (xSemaphoreTake(AudioAcqTask.lock, portMAX_DELAY) != pdTRUE)
+    {
+        // Handle error if needed (optional)
+    }
 #endif
 
-  if ((pData != NULL) && (pHdle->pData != NULL))
-  {
-    if ((pHdle->availableSamples + u32_nbSamples) > (pHdle->nbSamples * pHdle->nbFrames))
+    if ((pData != NULL) && (pHdle->pData != NULL))
     {
-      LogDebug("Audio capture => Overrun\r\n");
+        if ((pHdle->availableSamples + u32_nbSamples) > (pHdle->nbSamples * pHdle->nbFrames))
+        {
+            LogDebug("Audio capture => Overrun\r\n");
+        }
+        else
+        {
+            uint32_t bps     = pHdle->nbBytesPerSample;
+            uint32_t idx     = pHdle->writeSampleIndex;
+            uint32_t idxMax  = pHdle->nbSamples * pHdle->nbFrames;
+            uint32_t toWrite = u32_nbSamples < (idxMax- idx) ? u32_nbSamples: idxMax - idx;
+            memcpy(pHdle->pData + idx*bps, pData ,toWrite * bps);
+            uint32_t written = toWrite;
+            toWrite = u32_nbSamples - toWrite ;
+            pHdle->writeSampleIndex += u32_nbSamples;
+            if (toWrite)
+            {
+            memcpy(pHdle->pData, pData+written*bps,toWrite*bps);
+            pHdle->writeSampleIndex=toWrite;
+            }
+            atomic_add(&pHdle->availableSamples, s32_nbSamples);
+        }
     }
     else
     {
-      uint32_t bps     = pHdle->nbBytesPerSample;
-      uint32_t idx     = pHdle->writeSampleIndex;
-      uint32_t idxMax  = pHdle->nbSamples * pHdle->nbFrames;
-      uint32_t toWrite = u32_nbSamples < (idxMax- idx) ? u32_nbSamples: idxMax - idx;
-      memcpy(pHdle->pData + idx*bps, pData ,toWrite * bps);
-      uint32_t written = toWrite;
-      toWrite = u32_nbSamples - toWrite ;
-      pHdle->writeSampleIndex += u32_nbSamples;
-      if (toWrite)
-      {
-          memcpy(pHdle->pData, pData+written*bps,toWrite*bps);
-          pHdle->writeSampleIndex=toWrite;
-      }
-      atomic_add(&pHdle->availableSamples, s32_nbSamples);
+        LogError("Audio capture => Error, NULL pointer\n");
     }
-  }
-  else
-  {
-    LogError("Audio capture => Error, NULL pointer\n");
-  }
+
 #ifdef APP_BARE_METAL
-  __enable_irq();
+    __enable_irq();
 #else
-  tx_mutex_put(&AudioAcqTask.lock);
+    // Give back the mutex
+    xSemaphoreGive(AudioAcqTask.lock);
 #endif
 }

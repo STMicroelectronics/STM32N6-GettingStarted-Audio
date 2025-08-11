@@ -1,5 +1,5 @@
-ST Edge AI Core v2.1.0-20194 329b0e98d
-Created date          : 2025-05-02 15:41:00
+ST Edge AI Core v2.2.0-20266 2adc00962
+Created date          : 2025-07-17 14:57:19
 Parameters            : analyze -m yamnet_1024_64x96_tl_qdq_int8.onnx --target stm32n6 --st-neural-art default@user_neural_art.json
 
 Model name - yamnet_1024_64x96_tl_qdq_int8
@@ -210,8 +210,8 @@ model: macc=71,164,808 weights=12,822,824 activations=-- io=--
 
 Compilation details
 ------------------------------------------------------------------------------------
-Compiler version: 1.1.0-31
-Compiler arguments:  -i C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\st_ai_output\yamnet_1024_64x96_tl_qdq_int8_OE_3_2_0.onnx --json-quant-file C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\st_ai_output\yamnet_1024_64x96_tl_qdq_int8_OE_3_2_0_Q.json -g network.c --load-mdesc C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\stm32n6.mdesc --load-mpool C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\stm32n6.mpool --save-mpool-file C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\st_ai_ws\neural_art__network\stm32n6.mpool --out-dir-prefix C:\ST\CurrentDev\STM32N6_GettingStarted_Audio\Projects\X-CUBE-AI\models\st_ai_ws\neural_art__network/ --Ocache-opt -O3 --Os --native-float --mvei --Omax-ca-pipe 4 --cache-maintenance --csv-file network --all-buffers-info --output-info-file c_info.json
+Compiler version: 1.1.1-14
+Compiler arguments:  -i STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_3_0.onnx --json-quant-file STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_output/yamnet_1024_64x96_tl_qdq_int8_OE_3_3_0_Q.json -g network.c --load-mdesc STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/stm32n6.mdesc --load-mpool STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/stm32n6.mpool --save-mpool-file STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_ws/neural_art__network/stm32n6.mpool --out-dir-prefix STM32N6_GettingStarted_Audio/Projects/X-CUBE-AI/models/st_ai_ws/neural_art__network/ --Ocache-opt -O3 --Os --native-float --mvei --Omax-ca-pipe 4 --cache-maintenance --csv-file network --all-buffers-info --output-info-file c_info.json
 ====================================================================================
 
 Memory usage information  (input/output buffers are included in activations)
@@ -230,7 +230,7 @@ Total:                                             3.556 MB                     
 Used memory ranges
 ------------------------------------------------------------------------------------
 	npuRAM6    [0x34350000 - 0x343C0000]: 0x34350000-0x34374000
-	octoFlash  [0x70180000 - 0x74080000]: 0x70180000-0x704EA500
+	octoFlash  [0x70180000 - 0x74080000]: 0x70180000-0x704EA4F0
 ====================================================================================
 
 Epochs details
@@ -282,19 +282,19 @@ epoch 39     -SW-   (      Softmax       )
  ------------------------------- -------- ----------- ------ --------- 
  module                              text      rodata   data       bss 
  ------------------------------- -------- ----------- ------ --------- 
- network.o                          5,764     105,958      0         0 
- NetworkRuntime1010_CM55_GCC.a      3,876          32      0         0 
+ network.o                          5,836     107,846      0         0 
+ NetworkRuntime1020_CM55_GCC.a      3,876          32      0         0 
  ll_aton_reloc_network.o                0           0      0         0 
  lib (toolchain)*                     902         624      0         0 
- ll atonn runtime                   9,512       3,986     72     1,621 
+ ll atonn runtime                   9,304      12,958     72     1,637 
  ------------------------------- -------- ----------- ------ --------- 
- RT total**                        20,054     110,600     72     1,621 
+ RT total**                        19,918     121,460     72     1,637 
  ------------------------------- -------- ----------- ------ --------- 
- weights                                0   3,581,169      0         0 
+ weights                                0   3,581,153      0         0 
  activations                            0           0      0   147,456 
  io                                     0           0      0         0 
  ------------------------------- -------- ----------- ------ --------- 
- TOTAL                             20,054   3,691,769     72   149,077 
+ TOTAL                             19,918   3,702,613     72   149,093 
  ------------------------------- -------- ----------- ------ --------- 
  *  toolchain objects (libm/libgcc*)
  ** RT AI runtime objects (kernels+infrastructure)
@@ -303,9 +303,9 @@ epoch 39     -SW-   (      Softmax       )
   -------------------------------------------------
                FLASH (ro)     %*   RAM (rw)      % 
   -------------------------------------------------
-  RT total        130,726   3.5%      1,693   1.1% 
+  RT total        141,450   3.8%      1,709   1.1% 
   -------------------------------------------------
-  TOTAL         3,711,895           149,149        
+  TOTAL         3,722,603           149,165        
   -------------------------------------------------
   *  rt/total
 

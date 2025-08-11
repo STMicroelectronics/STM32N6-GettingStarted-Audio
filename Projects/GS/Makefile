@@ -2,19 +2,13 @@
 # target
 ######################################
 TARGET = GS_Audio_N6
-OPT = -g3 -Ofast
+OPT = -g3 -Os
 
 #######################################
 # paths
 #######################################
 # Build path
 BUILD_DIR_BASE := BuildGCC
-
-#######################################
-# installation env 
-#######################################
-pathCubeIde="C:/ST/STM32CubeIDE_1.17.0/STM32CubeIDE"
-pathProg="/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.win32_2.2.100.202412061334/tools/bin"
 
 ######################################
 # source
@@ -114,6 +108,7 @@ C_SOURCES += \
 ../../Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_uart.c\
 ../../Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_xspi.c\
 ../../Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_util_i3c.c\
+../../Drivers/STM32N6xx_HAL_Driver/Src/stm32n6xx_hal_tim.c\
 
 C_SOURCES += \
 ../../Middlewares/ST/AI/Npu/Devices/STM32N6XX/mcu_cache.c\
@@ -125,15 +120,10 @@ C_SOURCES += \
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_debug.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_lib.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_lib_sw_operators.c\
-../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_n64.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_osal_freertos.c\
-../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_osal_linux_bw.c\
-../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_osal_linux_uio.c\
-../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_osal_threadx.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_profiler.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_rt_main.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_runtime.c\
-../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_stai_internal.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_aton_util.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_sw_float.c\
 ../../Middlewares/ST/AI/Npu/ll_aton/ll_sw_integer.c\
@@ -155,8 +145,7 @@ C_SOURCES += \
 ../../Middlewares/ST/STM32_AI_AudioPreprocessing_Library/Src/window_f16.c\
 
 # ASM sources
-AS_SOURCES = \
-../../Drivers/CMSIS/Device/ST/STM32N6xx/Source/Templates/gcc/startup_stm32n657xx.s
+AS_SOURCES = ../../Drivers/CMSIS/Device/ST/STM32N6xx/Source/Templates/gcc/startup_stm32n657xx.s
 
 #######################################
 # binaries
@@ -164,7 +153,7 @@ AS_SOURCES = \
 PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
-GCC_PATH = 
+GCC_PATH =
 ifdef GCC_PATH
 CC = $(GCC_PATH)/$(PREFIX)gcc
 AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
@@ -182,9 +171,10 @@ endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary
 
-EL=$(pathCubeIde)$(pathProg)"/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
-FLASHER=$(pathCubeIde)$(pathProg)"/STM32_Programmer_CLI.exe"
-SIGNER =$(pathCubeIde)$(pathProg)"/STM32_SigningTool_CLI.exe"
+FLASHER = STM32_Programmer_CLI
+SIGNER = STM32_SigningTool_CLI
+OBJCOPY = arm-none-eabi-objcopy
+EL = "$(shell dirname "$(shell which $(FLASHER))")/ExternalLoader/MX66UW1G45G_STM32N6570-DK.stldr"
 
 #######################################
 # CFLAGS
@@ -203,10 +193,10 @@ C_DEFS =\
 -DLL_ATON_RT_MODE=LL_ATON_RT_ASYNC\
 -DLL_ATON_SW_FALLBACK -DLL_ATON_EB_DBG_INFO -DLL_ATON_DUMP_DEBUG_API\
 -DLL_ATON_DBG_BUFFER_INFO_EXCLUDED=1\
+-DFEAT_FREERTOS\
 
 C_INCLUDES = \
 -IInc\
--IThreadX\
 -I../Dpu\
 -I../Common\
 -I../X-CUBE-AI/atonn\
@@ -217,34 +207,31 @@ C_INCLUDES = \
 -I../../Drivers/CMSIS/Device/ST/STM32N6xx/Include\
 -I../../Drivers/CMSIS/Device/ST/STM32N6xx/Include/Templates\
 -I../../Drivers/STM32N6xx_HAL_Driver/Inc\
--I../../Middlewares/ST/ThreadX/ports/cortex_m55/gnu/inc\
--I../../Middlewares/ST/ThreadX/common/inc\
 -I../../Middlewares/ST/AI/Inc\
 -I../../Middlewares/ST/AI/Npu/Devices/STM32N6XX\
 -I../../Middlewares/ST/AI/Npu/ll_aton\
 -I../../Middlewares/ST/STM32_AI_AudioPreprocessing_Library/Inc\
 -I../../Drivers/BSP/Components/mx66uw1g45g\
--I../../Drivers/BSP/STM32N6570-DK 
+-I../../Middlewares/ST/FreeRTOS/Source/include \
+-I../../Middlewares/ST/FreeRTOS/Source/portable/GCC/ARM_CM55_NTZ/non_secure \
+-I../../Drivers/BSP/STM32N6570-DK \
+-Ifreertos
 
 OPT  += -c -Wall -fstack-usage -fdata-sections -ffunction-sections \
--fcyclomatic-complexity -flax-vector-conversions --specs=nano.specs 
+-fcyclomatic-complexity -flax-vector-conversions --specs=nano.specs
 OPT  += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@"
 
 C_FLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT)
 
 AS_DEFS =\
 -DDEBUG\
--DTX_INCLUDE_USER_DEFINE_FILE\
 
 AS_INCLUDES = \
 -IInc\
--IThreadX\
--I../../Middlewares/ST/ThreadX/ports/cortex_m55/gnu/inc\
--I../../Middlewares/ST/ThreadX/common/inc\
 
 AS_FLAGS = -mcpu=cortex-m55 -g3 $(AS_DEFS) $(AS_INCLUDES)
 AS_FLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@"
-AS_FLAGS += --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb 
+AS_FLAGS += --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb
 
 #######################################
 # LDFLAGS
@@ -253,7 +240,7 @@ AS_FLAGS += --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb
 LDSCRIPT = STM32CubeIDE/STM32N657XX_LRUN.ld
 
 # libraries
-LIBS = -lc -lm -lnosys -l:NetworkRuntime1010_CM55_GCC.a
+LIBS = -lc -lm -lnosys -l:NetworkRuntime1020_CM55_GCC.a
 LIBDIR = -L../../Middlewares/ST/AI/Lib/GCC/ARMCortexM55
 LD_FLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS)
 LD_FLAGS += -Wl,--cref -Wl,--gc-sections
@@ -261,19 +248,25 @@ LD_FLAGS += -u _printf_float
 LD_FLAGS += -Wl,--print-memory-usage
 LD_FLAGS += -Wl,--no-warn-rwx-segments
 
-all: bm bm_lp tx tx_lp
+all: freertos freertos_lp bm bm_lp
 
-# Includes 
+# Includes
 include bm.mk
 include bm_lp.mk
-include tx.mk
-include tx_lp.mk
+include freertos.mk
+include freertos_lp.mk
 
 # Fonction pour supprimer les doublons sans trier
 unique = $(if $1,$(firstword $1) $(call unique,$(filter-out $(firstword $1),$1)))
 
-SRC_DIRS = $(call unique , $(PATCH_DIR) $(dir $(C_SOURCES_BM)) $(dir $(C_SOURCES_TX)))
-AS_DIRS  = $(call unique , $(PATCH_DIR) $(dir $(AS_SOURCES_BM)) $(dir $(AS_SOURCES_TX)))
+SRC_DIRS = $(call unique , $(PATCH_DIR) $(dir $(C_SOURCES_BM)) $(dir $(C_SOURCES_FREERTOS)))
+AS_DIRS  = $(call unique , $(PATCH_DIR) $(dir $(AS_SOURCES_BM)) $(dir $(AS_SOURCES_FREERTOS)))
+
+display_sources:
+	echo "C_SOURCES_FREERTOS: $(dir $(C_SOURCES_FREERTOS))"
+
+display_dirs:
+	echo "AS_DIRS: $(AS_DIRS)"
 
 vpath %.c $(SRC_DIRS)
 vpath %.s $(AS_DIRS)
@@ -285,25 +278,22 @@ env:
 	@echo "Flasher         : "$(FLASHER)
 	@echo "External Loader : "$(EL)
 	@echo "Signer          : "$(SIGNER)
-	@echo $(C_SOURCES_TX)
-	@echo $(C_SOURCES_TX_LP)
+	@echo $(C_SOURCES_FREERTOS)
+	@echo $(C_SOURCES_FREERTOS_LP)
 
-clean_all : clean_bm clean_bm_lp clean_tx clean_tx_lp
+clean_all : clean_bm clean_bm_lp clean_freertos clean_freertos_lp
 	@echo "all cleaned"
 
 Binaries:  $(BUILD_DIR_BM)/$(TARGET)_sign.bin \
 $(BUILD_DIR_BM_LP)/$(TARGET)_sign.bin\
-$(BUILD_DIR_TX)/$(TARGET)_sign.bin\
-$(BUILD_DIR_TX_LP)/$(TARGET)_sign.bin
-	cp $(BUILD_DIR_BM)/$(TARGET)_sign.bin ../../Binaries/xx_bm.bin
-	cp $(BUILD_DIR_BM_LP)/$(TARGET)_sign.bin ../../Binaries/xx_bm_lp.bin
-	cp $(BUILD_DIR_TX)/$(TARGET)_sign.bin ../../Binaries/xx_tx.bin
-	cp $(BUILD_DIR_TX_LP)/$(TARGET)_sign.bin ../../Binaries/xx_tx_lp.bin
+$(BUILD_DIR_FREERTOS)/$(TARGET)_sign.bin\
+$(BUILD_DIR_FREERTOS_LP)/$(TARGET)_sign.bin\
+$(BUILD_DIR_FREERTOS)/$(TARGET)_sign.bin
 
 #######################################
 # dependencies
 #######################################
 -include $(wildcard $(BUILD_DIR_BM)/*.d)
--include $(wildcard $(BUILD_DIR_TX)/*.d)
+-include $(wildcard $(BUILD_DIR_FREERTOS)/*.d)
 
 .PHONY: clean all env Binaries

@@ -15,7 +15,6 @@ Getting Start, Model Zoo, Sensing, Audio, X-CUBE-AI, STM32N6
 
 ## Table of Contents
 
-- [Directory contents](#directory-contents)
 - [Hardware and Software environment](#hardware-and-software-environment)
   - [Hardware support](#hardware-support)
   - [Boot modes](#boot-modes)
@@ -30,25 +29,6 @@ Getting Start, Model Zoo, Sensing, Audio, X-CUBE-AI, STM32N6
   - [AED example](#aed-example)
   - [SE example](#se-example)
 - [History](#history)
-
-## Directory contents
-
-This repository is structured as follows:
-
-| Directory                                             | Content                                    |
-|:----------------------------------------------------- |:------------------------------------------ |
-| Projects/GS                                           | Getting Started main application           |
-| Projects/GS/STM32CubeIDE                              | IDE project files                          |
-| Projects/GS/ThreadX                                   | RTOS application files                     |
-| Projects/DPU                                          | Digital Processing Units                   |
-| Projects/X-CUBE-AI                                    | X-CUBE-AI application                      |
-| Projects/X-CUBE-AI/models                             | examplary AI models                        |
-| Projects/Common                                       | commonly used N6 application files         |
-| Middlewares/ST/AI                                     | AI runtime library & Npu low level drivers |
-| Middlewares/ST/STM32_AI_AudioPreprocessing_Library    | Audio Preprocessing library                |
-| Middlewares/ST/ThreadX                                | Azure RTOS ThreadX                         |
-| Drivers                                               | Hardware drivers & base port               |
-| Binaries                                              | Prebuilt binaries                          |
 
 ## Hardware and Software environment
 
@@ -75,8 +55,8 @@ off the board, your program will be lost.
 ### Serial port configuration
 
 This package outputs results and useful information (depending on the configured
-level of verbosity) through a serial connection. the default configuration of
-this serial link is such:
+level of verbosity) through a serial connection. The default configuration of
+the serial link is:
 
 - Speed = 14400 bauds
 - Data = 8 bit
@@ -86,33 +66,33 @@ this serial link is such:
 
 ### Toolchains support
 
-- STM32CubeIDE v1.18.1
-- STEdgeAI v2.1
+- [STM32CubeIDE](https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html) (**STM32CubeIDE 1.17.0**)
+- [STEdgeAI](https://www.st.com/en/development-tools/stedgeai-core.html) (**v2.2.0**)
 
 ## Quickstart using prebuilt binaries
 
 Two use cases are provided as examples:
 
-  1. Audio Event Detection (aed)
-  2. Speech Enhancement (se)
+  1. Audio Event Detection (aed): Automatically recognizing events like a baby crying or a clock tick.
+  2. Speech Enhancement (se): Improve quality and intelligibility of speech signals, especially in noisy environments.
 
-for each use case, a pre-trained model is used, and its weigths are provided in
+For each use case, a pre-trained model is used, and its weigths are provided in
 binary format:
 
 - `Binaries/aed_weights.bin`
 - `Binaries/se_weights.bin`
 
-for each use case 4 application builds combining bare metal (bm) or ThreadX (tx)
+for each use case 4 application builds combining bare metal (bm) or freertos (freertos)
 and low power (lp) are provided:
 
 - `Binaries/aed_bm.bin`
 - `Binaries/aed_bm_lp.bin`
-- `Binaries/aed_tx.bin`
-- `Binaries/aed_tx_lp.bin`
+- `Binaries/aed_freertos.bin`
+- `Binaries/aed_freertos_lp.bin`
 - `Binaries/se_bm.bin`
 - `Binaries/se_bm_lp.bin`
-- `Binaries/se_tx.bin`
-- `Binaries/se_tx_lp.bin`
+- `Binaries/se_freertos.bin`
+- `Binaries/se_freertos_lp.bin`
 
 Three binaries must be programmed in the board external flash using the
 following procedure:
@@ -120,23 +100,22 @@ following procedure:
   1. Switch BOOT1 switch to right position
   2. Program `Binaries/fsbl_fw_lrun_v1.2.0.bin` (First stage boot loader @0x70000000 )
   3. Program `Binaries/[aed,se]_weights.bin` (params of the networks @0x70180000; To be changed only when the network is changed)
-  4. Program `Binaries/[aed,se]_[bm,tx]_[lp].bin` (signed firmware application @0x70100000)
+  4. Program `Binaries/[aed,se]_[bm,freertos]_[lp].bin` (signed firmware application @0x70100000)
   5. Switch BOOT1 switch to Left position
   6. Power cycle the board
 
-After setting you own `pathCubeIde` variable in `Binaries/flash-bin.sh`
+After added your own `STM32_Programmer_CLI` in your PATH.
+(`STM32_Programmer_CLI` can be found in STM32CubeIDE install at `<Installed Folder>/stm32cubeide_1.17.0/plugins/com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.<xxx version>/tools/bin/STM32_Programmer_CLI`)
 
-```bash
-pathCubeIde="<your path to cube IDE>"
-pathProg="<your relative path to cube IDE programmer plug in>"
-```
-
-Source `flash-bin.sh` with two arguments:
+Execute `flash-bin.sh` with two arguments:
 
   1. the use case (se/aed)
-  2. the build configuration (bm/bm_lp/rx/tx_lp)
+  2. the build configuration (bm/bm_lp/freertos/freertos_lp)
 
-Afer setting BOOT1 switch to the left position, and power cycle, here is the
+For example:
+`flash-bin.sh aed bm_lp`
+
+After setting in [Boot from flash](#boot-modes) and power cycle, here is the
 typical output seen on the uart console (baud rate = 14400):
 
 ```text
@@ -204,11 +183,11 @@ None
 Two extra features are implemented:
 
 1. *Random load generation* demonstrates system availiblity for additional
-flexible parallel processing. This feature is not avalaible in bare metal
+flexible parallel processing. This feature is not available in bare metal
 implementation.
 2. *Bypass audio processing* allows the user to appreciate the benefit of audio
-processing by comparing when teh audio is directly looped back on the headset
-without any AI processing. This feature is relevant to speeech enhancemnent (SE)
+processing by comparing when the audio is directly looped back on the headset
+without any AI processing. This feature is relevant to speech enhancemnent (SE)
 only.
 
 Depending on configuration user button allocations are as follow:
@@ -216,8 +195,8 @@ Depending on configuration user button allocations are as follow:
 | Configuration             | USER1 Button      | TAMP Button            |
 |:------------------------- |:------------------|:---------------------- |
 | AED BM or BM-LP           | N/A               | N/A                    |
-| AED TX or TX-LP           | N/A               | Random load generation |
-| SE  TX or TX-LP           | Bypass audio proc | Random load generation |
+| AED FREERTOS or FREERTOS-LP           | N/A               | Random load generation |
+| SE  FREERTOS or FREERTOS-LP           | Bypass audio proc | Random load generation |
 | SE  BM or BM-LP           | Bypass audio proc | N/A                    |
 
 Note that:
@@ -228,20 +207,9 @@ Note that:
 
 ## Deployment
 
-This Getting Started includes all the application code and libraries but the
-specific AI parts:
+This Getting Started includes all the application code and libraries with aed as default config.
 
-- The AI runtime Librarie
-- The header files that exposes the API's of the above mentionned librarie
-- The low level drivers for ATON, the STM32N6 Neural-ART™ accelerator
-- The model C code (`network.c`)
-- The AI processing chain description, including post and pre processing
-(`ai_model_config.h`)
-- The look up tables for preprocessing that depends on porcessing parameters
-chosen by the user and implemented as look-up table for optimisation purposes.
-
-The python scripts provided in model zoo will generate those missing bits before
-firmware can be built.
+The python scripts provided in model zoo can modif the app to deploy another model. You can either use the [Model zoo](#model-zoo-deployment) or the [manual deploymennt](#manual-deployment) provided in the package.
 
 ### Model zoo deployment
 
@@ -294,10 +262,10 @@ deployment:
   hardware_setup:
     serie: STM32N6
     board: STM32N6570-DK
-  build_conf : "N6 Audio Bare Metal" # this is default configuration
-  # build_conf : "N6 Audio Thread X"
-  # build_conf : "N6 Audio Bare Metal Low Power"
-  # build_conf : "N6 Audio Thread X Low Power"
+  build_conf : "BM" # this is default configuration
+  # build_conf : "FREERTOS"
+  # build_conf : "BM_LP"
+  # build_conf : "FREERTOS_LP"
   unknown_class_threshold: 0.5 # Threshold used for OOD detection. Mutually exclusive with use_garbage_class
                                # Set to 0 to disable. To enable, set to any float between 0 and 1.
 ```
@@ -310,11 +278,11 @@ Metal with no Low Power*" is used by default
 ### Manual deployment
 
 Note that the steps below are implemented in `deploy-model.sh` found under
-`Projects\X-CUBE-AI\models`. you need to provide three arguments:
+`Projects/X-CUBE-AI/models`. you need to provide three arguments:
 
   1. model file (xxx.onnx)
   2. type of model (se/aed )
-  3. build configuration (BM/BM_LP/TX/TX_LP)
+  3. build configuration (BM/BM_LP/FREERTOS/FREERTOS_LP)
 
 This script implements the following steps:
 
@@ -340,7 +308,7 @@ You need to specify you own enviroment in these shell scripts
 in `generate-n6-model.sh`
 
 ```bash
-generateCmd="<PathtoStedgeAI>/Utilities/windows/stedgeai.exe"   
+generateCmd="<PathtoStedgeAI>/Utilities/windows/stedgeai.exe"
 ```
 
 in `build_firmware.sh`
@@ -517,8 +485,8 @@ computed, and how many columns needs to overlap to between two patchs to
 mitigate inter patch.
 
 ```C
-#define CTRL_X_CUBE_AI_SPECTROGRAM_COL_NO_OVL    (30U) 
-#define CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL       (5U) 
+#define CTRL_X_CUBE_AI_SPECTROGRAM_COL_NO_OVL    (30U)
+#define CTRL_X_CUBE_AI_SPECTROGRAM_COL_OVL       (5U)
 ```
 
 ![speech enhancement block diagram](./_htmresc/overlap.png)
@@ -527,7 +495,7 @@ Optionally you can specify a threshold (in dB) under which the samples will be
 silented:
 
 ```C
-#define CTRL_X_CUBE_AI_AUDIO_OUT_DB_THRESHOLD    (-50.0F) 
+#define CTRL_X_CUBE_AI_AUDIO_OUT_DB_THRESHOLD    (-50.0F)
 ```
 
 You will now describe the digital microphone that will connect to the AI
@@ -538,18 +506,3 @@ processing chain:
 #define CTRL_X_CUBE_AI_SENSOR_ODR             (16000.0F)
 #define CTRL_X_CUBE_AI_SENSOR_FS              (112.5F)
 ```
-
-## History
-
-### V2.0.0 maintenance
-
-- upgraded to
-  - Cube Firmware 1.1
-  - STEdge AI 2.1
-  - STM32CUBEIDE 1.18.1
-
-### V1.0.0 Initial Version
-
-- First release of getting started exposing:
-  - Audio Event Detection
-  - Speech enhancement

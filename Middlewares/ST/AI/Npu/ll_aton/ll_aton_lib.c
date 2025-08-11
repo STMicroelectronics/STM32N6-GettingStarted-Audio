@@ -2280,22 +2280,22 @@ static int floating_to_Q(float f, int Qm, int Qn)
 {
   float tmp;
   if (Qn >= 0)
-    tmp = (f * ((int)1 << Qn) + (f > (float)0 ? (float)0.5 : (float)-0.5));
+    tmp = (f * ((long long)1 << Qn) + (f > (float)0 ? (float)0.5 : (float)-0.5));
   if (Qn < 0)
-    tmp = (f * (float)1 / ((int)1 << -Qn));
-  if (tmp > (float)(((int)1 << (Qm + Qn)) - 1))
-    tmp = (float)(((int)1 << (Qm + Qn)) - 1);
-  if (tmp < -(float)((int)1 << (Qm + Qn)))
-    tmp = -(float)((int)1 << (Qm + Qn));
+    tmp = (f * (float)1 / ((long long)1 << -Qn));
+  if (tmp > (float)(((long long)1 << (Qm + Qn)) - 1))
+    tmp = (float)(((long long)1 << (Qm + Qn)) - 1);
+  if (tmp < -(float)((long long)1 << (Qm + Qn)))
+    tmp = -(float)((long long)1 << (Qm + Qn));
   return (int)tmp;
 }
 
 static float Q_to_floating(int i, int Qm, int Qn)
 {
   if (Qn >= 0)
-    return ((float)i / (float)((int)1 << Qn));
+    return ((float)i / (float)((long long)1 << Qn));
   if (Qn < 0)
-    return ((float)i * (float)((int)1 << -Qn));
+    return ((float)i * (float)((long long)1 << -Qn));
   return 0.f;
 }
 

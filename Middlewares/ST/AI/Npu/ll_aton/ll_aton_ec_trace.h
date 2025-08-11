@@ -24,6 +24,7 @@ extern "C"
 {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
 
   typedef struct mpool_reloc_info_t
@@ -31,8 +32,8 @@ extern "C"
     const char *name;
     const char *base_symbol;
     uintptr_t base_address;
-    int is_absolute;
-    int is_user_io;
+    bool is_absolute;
+    bool is_user_io;
   } mpool_reloc_info_t;
 
   // array of memory pool info needed for relocation (ends when name == NULL)
@@ -43,7 +44,7 @@ extern "C"
 
   extern void ec_trace_comment(const char *comment);
 
-  extern void ec_trace_init(const char *out_filenamme, const char *network_name);
+  extern void ec_trace_init(const char *out_filenamme, const char *network_name, bool encrypted);
   extern void ec_trace_start_blob(const char *blob_name);
   extern void ec_trace_end_blob(const char *blob_name);
   extern void ec_trace_start_epoch(unsigned int num);
@@ -59,6 +60,7 @@ extern "C"
 
   extern void ec_trace_write(uintptr_t dstreg, unsigned int val);
   extern void ec_trace_write_reloc(uintptr_t dstreg, unsigned int base, unsigned int offset);
+  extern void ec_trace_set_patch_params(const char *id, uint32_t mask);
   extern void ec_trace_reg_write(unsigned int IP_id, unsigned int REG_id, unsigned int val);
   extern void ec_trace_reg_write_reloc(unsigned int IP_id, unsigned int REG_id, unsigned int base, unsigned int offset);
   extern void ec_trace_reg_writefield(unsigned int IP_id, unsigned int REG_id, unsigned int lsb, unsigned int num_bits,

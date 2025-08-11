@@ -135,6 +135,8 @@ LAYER_ENTRY(TREE_ENSEMBLE_REGRESSOR, LAYER_ID(46), tree_ensemble_regressor, forw
 LAYER_ENTRY(GATHER_ND, LAYER_ID(67), gather_nd, forward_gather_nd, NULL, NULL)
 /*!< MATMUL layer */
 LAYER_ENTRY(MATMUL, LAYER_ID(68), matmul, forward_dmatmul, NULL, NULL)
+/*!< GatherElements layer */
+LAYER_ENTRY(GATHER_ELEMENTS, LAYER_ID(70), gather_elements, forward_gather_elements, NULL, NULL)
 /*!< Deeply Quantized Dense Layers */
 LAYER_ENTRY(CONV2D_DQNN, LAYER_ID(48), conv2d_dqnn, forward_pw_is1os1ws1_bn, NULL, NULL)
 LAYER_ENTRY(POOL_DQNN, LAYER_ID(49), pool_dqnn, forward_maxpool_is1os1, NULL, NULL)

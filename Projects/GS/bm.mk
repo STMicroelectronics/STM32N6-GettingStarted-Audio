@@ -16,8 +16,11 @@ $(BUILD_DIR_BM)/%.o: %.c | $(BUILD_DIR_BM)
 $(BUILD_DIR_BM)/%.o: %.s | $(BUILD_DIR_BM)
 	$(AS) -c "$<" $(AS_FLAGS_BM) -o "$@"  
 
-$(BUILD_DIR_BM)/$(TARGET).elf: $(OBJECTS_BM) | $(BUILD_DIR_BM)
-	$(CC) $(OBJECTS_BM) $(LD_FLAGS_BM) -o "$@"
+$(BUILD_DIR_BM)/bm.list: $(OBJECTS_BM)
+	$(file > $@, $(OBJECTS_BM))
+
+$(BUILD_DIR_BM)/$(TARGET).elf: $(BUILD_DIR_BM)/bm.list | $(BUILD_DIR_BM)
+	$(CC) @$(BUILD_DIR_BM)/bm.list $(LD_FLAGS_BM) -o "$@"
 	$(SZ) $@
 
 $(BUILD_DIR_BM)/%.bin: $(BUILD_DIR_BM)/%.elf

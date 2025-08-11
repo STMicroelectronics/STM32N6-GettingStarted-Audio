@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V2.0.0
   * @date    02-May-2025
-  * @brief   
+  * @brief
   ******************************************************************************
   * @attention
   *
@@ -53,7 +53,7 @@ static void MPU_Config(void);
 static void Ext_Mem_Config(void);
 static void Int_Mem_Config(void);
 static void SleepClks_init(void);
-static void Error_Handler(void);  
+static void Error_Handler(void);
 static void Record_Init(void);
 static void NPU_SettingsLog(void);
 
@@ -80,7 +80,7 @@ int16_t  playback_buf[PLAYBACK_BUFFER_SIZE] __NON_CACHEABLE;
 #endif
 
 /**
-  * @brief  Initializes the system according to the application 
+  * @brief  Initializes the system according to the application
   *         system requirement.
   * @param  None
   * @retval None
@@ -95,17 +95,17 @@ void init_bm(void)
   __HAL_RCC_SYSCLK_CONFIG(RCC_SYSCLKSOURCE_HSI);
 
   HAL_Init();
-  
+
   SystemClock_Config_Full();
 
-#ifdef APP_DVFS  
+#ifdef APP_DVFS
   pm_init_dvfs();
 #endif
   /* Force fusing of the OTP when using a Nucleo/DK board only */
 #if (defined(USE_STM32N6xx_NUCLEO) || defined(USE_STM32N6570_DK))
   fuse_vddio();
 #endif
-  
+
   MPU_Config();
   Int_Mem_Config();
   Ext_Mem_Config();
@@ -222,7 +222,7 @@ bool audio_process(AudioBM_acq_t * acq_ctx_ptr,AudioBM_proc_t * proc_ctx_ptr)
   uint8_t *acq_buf = (uint8_t *) (&proc_ctx_ptr->proc_buff[AUDIO_ACQ_OFFSET]);
   bool cont = true;
 
-#ifdef APP_DVFS 
+#ifdef APP_DVFS
   pm_set_opp_min(OPP_MAX);
 #endif /* APP_DVFS */
 
@@ -241,9 +241,9 @@ bool audio_process(AudioBM_acq_t * acq_ctx_ptr,AudioBM_proc_t * proc_ctx_ptr)
 #if (CTRL_X_CUBE_AI_MODE_OUTPUT_1 == CTRL_AI_CLASS_DISTRIBUTION )
   isNotSilence = (proc_ctx_ptr->audioPreCtx.S_Spectr.spectro_sum > CTRL_X_CUBE_AI_SPECTROGRAM_SILENCE_THR);
   isPlayback = test_probe_in(&proc_ctx_ptr->aiCtx,&proc_ctx_ptr->audioPreCtx);
-#endif    
+#endif
 
-#ifdef APP_LP      
+#ifdef APP_LP
   NPU_on();
 #endif /* APP_LP */
   /* AI processing */
@@ -456,7 +456,7 @@ void printCpuStats(void)
 #if (CTRL_X_CUBE_AI_MODE_OUTPUT_1 == CTRL_AI_CLASS_DISTRIBUTION )
 /**
 * @brief  Displays Inference processing outputs
-* @param  None      
+* @param  None
 * @retval None
 */
 void printInferenceResults(const LL_Buffer_InfoTypeDef* pBuffRes)
@@ -464,11 +464,11 @@ void printInferenceResults(const LL_Buffer_InfoTypeDef* pBuffRes)
   /**
   * Specifies the labels for the classes of the demo.
   */
-  
+
   const char* sAiClassLabels[CTRL_X_CUBE_AI_MODE_CLASS_NUMBER] \
   = CTRL_X_CUBE_AI_MODE_CLASS_LIST;
   float *nn_out =  (float *) LL_Buffer_addr_start(pBuffRes);
-  
+
   uint32_t nn_out_len = get_ll_buffer_size(pBuffRes)/sizeof(float);
   float max_out = nn_out[0];
   uint32_t max_idx = 0;
@@ -614,7 +614,7 @@ void BSP_PB_Callback(Button_TypeDef Button)
                     private  functions definition
  ============================================================================= */
 
-#if (CTRL_X_CUBE_AI_AUDIO_OUT==COM_TYPE_HEADSET)  
+#if (CTRL_X_CUBE_AI_AUDIO_OUT==COM_TYPE_HEADSET)
 /**
   * @brief  Playback initialization
   * @param  ctx_ptr play back execution context
@@ -624,7 +624,7 @@ static void initAudioPlayBack(AudioBM_play_back_t *ctx_ptr)
 {
    BSP_AUDIO_Init_t AudioInit;
 
-  /* Configure playback */ 
+  /* Configure playback */
   AudioInit.Device        = AUDIO_OUT_DEVICE_HEADPHONE;
   AudioInit.SampleRate    = AUDIO_FREQUENCY;
   AudioInit.BitsPerSample = AUDIO_RESOLUTION_16B;
@@ -664,7 +664,7 @@ static void AudioPlayBack(AudioBM_play_back_t *ctx_ptr, int16_t *pData,\
     {
       Error_Handler();
     }
-  }    
+  }
   ctx_ptr->cnt++;
 }
 
@@ -720,16 +720,16 @@ static void Int_Mem_Config(void)
   __HAL_RCC_SYSCFG_CLK_ENABLE();
   __HAL_RCC_CRC_CLK_ENABLE();
 
-#ifdef APP_LP  
+#ifdef APP_LP
 /*  hramcfg.Instance =  RAMCFG_SRAM2_AXI;
   HAL_RAMCFG_DisableAXISRAM(&hramcfg);
   HAL_RAMCFG_EnableAXISRAM(&hramcfg); */
   hramcfg.Instance =  RAMCFG_SRAM6_AXI;
   HAL_RAMCFG_EnableAXISRAM(&hramcfg);
-  
+
   __HAL_RCC_CACHEAXIRAM_MEM_CLK_ENABLE();
   __HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
-  
+
 /*  __HAL_RCC_AXISRAM2_MEM_CLK_DISABLE(); */
   __HAL_RCC_AHBSRAM1_MEM_CLK_DISABLE();
   __HAL_RCC_AHBSRAM2_MEM_CLK_DISABLE();
@@ -756,8 +756,8 @@ static void Int_Mem_Config(void)
   __HAL_RCC_AXISRAM4_MEM_CLK_ENABLE();
   __HAL_RCC_AXISRAM5_MEM_CLK_ENABLE();
   __HAL_RCC_AXISRAM6_MEM_CLK_ENABLE();
-  
-#endif  
+
+#endif 
   /* Allow caches to be activated. Default value is 1, but the current boot sets it to 0 */
   MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_DCACTIVE_Msk | MEMSYSCTL_MSCR_ICACTIVE_Msk;
 }
@@ -835,7 +835,7 @@ static void Ext_Mem_Config(void)
   BSP_XSPI_NOR_Init_t Flash;
   Flash.InterfaceMode = MX66UW1G45G_OPI_MODE;
   Flash.TransferRate = MX66UW1G45G_DTR_TRANSFER;
-  
+
   if(BSP_XSPI_NOR_Init(0, &Flash) != BSP_ERROR_NONE)
   {
     __BKPT(0);
@@ -921,4 +921,3 @@ static void Error_Handler(void)
   {
   }
 }
-

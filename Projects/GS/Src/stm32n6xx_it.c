@@ -21,6 +21,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "stm32n6xx_hal.h"
 #include "stm32n6xx_it.h"
 #include "stm32n6570_discovery.h"
@@ -147,16 +148,23 @@ void PendSV_Handler(void)
 #endif
 
 /**
-  * @brief  This function handles SysTick Handler.
-  * @param  None
-  * @retval None
+  * @brief This function handles System tick timer.
   */
-#ifdef APP_BARE_METAL
-void SysTick_Handler(void)
+void _SysTick_Handler(void)
 {
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+  /* Clear overflow flag */
+  SysTick->CTRL;
+
+#ifndef APP_BARE_METAL
+  if( xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED )
+  {
+      /* Call the cortex-m33 port systick handler */
+      SysTick_Handler();
+  }
+#endif
   HAL_IncTick();
 }
-#endif
 
 /******************************************************************************/
 /*                 STM32N6xx Peripherals Interrupt Handlers                   */

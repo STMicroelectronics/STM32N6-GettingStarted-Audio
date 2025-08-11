@@ -4,7 +4,7 @@
   * @author  MCD Application Team
   * @version V2.0.0
   * @date    02-May-2025
-  * @brief   
+  * @brief
   ******************************************************************************
   * @attention
   *
@@ -22,8 +22,11 @@
 #include <assert.h>
 
 #include "main.h"
-#include "tx_api.h"
 #include "audio_bm.h"
+
+#ifndef APP_BARE_METAL
+#include "audio_freertos.h"
+#endif
 
 int main(void)
 {
@@ -31,7 +34,7 @@ int main(void)
 #ifdef APP_BARE_METAL
   exec_bm();
 #else
-  tx_kernel_enter();
+  main_freertos();
 #endif
 }
 

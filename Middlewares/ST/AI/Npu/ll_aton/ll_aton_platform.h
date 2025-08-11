@@ -168,7 +168,7 @@ typedef int32_t IRQn_Type;
 extern uint8_t *get_zynq_aton_base(void);
 #define NVIC_EnableIRQ(x)
 #define NVIC_DisableIRQ(x)
-#define ATON_BASE          (get_zynq_aton_base())
+#define ATON_BASE          (uintptr_t)(get_zynq_aton_base())
 /* Timer clock is 100MHz. Compute timeout accordingly. */
 #define ATON_EPOCH_TIMEOUT (ATON_EPOCH_TIMEOUT_MS * 100 * 1000)
 

@@ -371,18 +371,27 @@ void LL_ATON_RT_SetRuntimeCallback(TraceRuntime_FuncPtr_t rt_callback)
 
 /**
  * @brief Register callback for tracing epoch/network related events (see `LL_ATON_RT_Callbacktype_t`)
- * @param nn_instance Pointer to network instance for which to set the callback
+ * @param epoch_block_callback Function pointer to callback function (set to `NULL` to disable epoch tracing)
+ * @param nn_instance          Pointer to network instance for which to set the callback (may not be `NULL`)
+ *
+ * @deprecated This function is deprecated and will be removed in a future release.
+ *             Use `LL_ATON_RT_SetNetworkCallback()` instead!
  */
+void LL_ATON_RT_SetEpochCallback(TraceEpochBlock_FuncPtr_t epoch_block_callback, NN_Instance_TypeDef *nn_instance)
+{
+  LL_ATON_ASSERT(nn_instance != NULL);
+  nn_instance->exec_state.epoch_callback_function = epoch_block_callback;
+}
 
 /**
  * @brief Register callback for tracing epoch/network related events (see `LL_ATON_RT_Callbacktype_t`)
- * @param epoch_block_callback Function pointer to callback function (set to `NULL` to disable epoch tracing)
  * @param nn_instance          Pointer to network instance for which to set the callback (may not be `NULL`)
+ * @param epoch_block_callback Function pointer to callback function (set to `NULL` to disable epoch tracing)
  *
  * @note  This function must only be called while the passed network instance is not executing
  *        and should be called before `LL_ATON_RT_Init_Network()`!
  */
-void LL_ATON_RT_SetEpochCallback(TraceEpochBlock_FuncPtr_t epoch_block_callback, NN_Instance_TypeDef *nn_instance)
+void LL_ATON_RT_SetNetworkCallback(NN_Instance_TypeDef *nn_instance, TraceEpochBlock_FuncPtr_t epoch_block_callback)
 {
   LL_ATON_ASSERT(nn_instance != NULL);
   nn_instance->exec_state.epoch_callback_function = epoch_block_callback;
@@ -773,7 +782,7 @@ static void __LL_ATON_RT_IrqErr(uint32_t irqs)
 
 #ifndef NDEBUG
     uint32_t streng_err = ATON_STRENG_IRQ_GET(streaming_engine_nr);
-    LL_ATON_PRINTF("Streaming engine #%u error interrupt: 0x%" PRIx32 "\n", streaming_engine_nr, streng_err);
+    LL_ATON_PRINTF("Streaming engine #%" PRIu32 " error interrupt: 0x%" PRIx32 "\n", streaming_engine_nr, streng_err);
 #endif // NDEBUG
   }
   /* Streaming Engine interrupts */

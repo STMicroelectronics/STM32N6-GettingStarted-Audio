@@ -52,7 +52,7 @@ static uint32_t get_risaf_max_addr(RISAF_TypeDef *risaf)
 
 static void set_risaf_default(RISAF_TypeDef *risaf)
 {
-  RISAF_BaseRegionConfig_t risaf_conf;  
+  RISAF_BaseRegionConfig_t risaf_conf;
   risaf_conf.StartAddress = 0x0;
   risaf_conf.EndAddress   = get_risaf_max_addr(risaf); /* as the default config */
   risaf_conf.Filtering    = RISAF_FILTER_ENABLE; // Base region enable (otherwise access control is secure, privileged, trusted domain CID = 1)
@@ -120,7 +120,7 @@ void set_clk_sleep_mode(void)
   // Low-power clock enable misc
   __HAL_RCC_DBG_CLK_SLEEP_ENABLE();
   __HAL_RCC_XSPIPHYCOMP_CLK_SLEEP_ENABLE();
-  
+
   // Low-power clock enable for memories
   __HAL_RCC_AXISRAM1_MEM_CLK_SLEEP_ENABLE();
   __HAL_RCC_AXISRAM2_MEM_CLK_SLEEP_ENABLE();
@@ -151,18 +151,18 @@ void set_clk_sleep_mode(void)
 
 /* Change the VDDCORE level for overdrive modes
  * (Nucleo, legacy DK -before rev. C)
- * Using the I2c to control the Step-Down Converter 
+ * Using the I2c to control the Step-Down Converter
  *      This is mandatory / safer if an "overdrive" configuration is needed
  *      For the DK <rev.C /Nucleo, step-down converter = TPS62864
  *      Setting resistor = 56.2 kohm
- *              with 56.2kOhm: Output level: 0.80 V 
+ *              with 56.2kOhm: Output level: 0.80 V
  *              with 56.2kOhm: I2C device Address : 1001 001 = 0x49
  * (DK -after rev. C included)
  * Using the GPIO to control the step-down converter (for DK rev >= C)
  */
 void upscale_vddcore_level(void)
 {
-#if ((NUCLEO_N6_CONFIG == 0) && defined(STM32N6570_DK_REV) && (STM32N6570_DK_REV>=STM32N6570_DK_C01))      // Handle new DK boards with new SMPS controlled by GPIO  
+#if ((NUCLEO_N6_CONFIG == 0) && defined(STM32N6570_DK_REV) && (STM32N6570_DK_REV>=STM32N6570_DK_C01))      // Handle new DK boards with new SMPS controlled by GPIO
   BSP_SMPS_Init(SMPS_VOLTAGE_OVERDRIVE);
 #else   // Handle Nucleo boards or DK boards before rev.C
   uint8_t tmp;
@@ -170,7 +170,7 @@ void upscale_vddcore_level(void)
   BSP_I2C2_Init();
   // Address of the device on 7 bits: API requires the address to be switched left by 1
   // Write tmp on register 0x1 (Vout register 1), length=1
-  BSP_I2C2_WriteReg(0x49 << 1, 0x01, &tmp, 1);  
+  BSP_I2C2_WriteReg(0x49 << 1, 0x01, &tmp, 1);
 #endif
   HAL_Delay(1); /* Assuming Voltage Ramp Speed of 1mV/us --> 100mV increase takes 100us */
 }
@@ -182,7 +182,7 @@ void upscale_vddcore_level(void)
 void UART_Config(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  
+
   /* Peripheral clock enable */
   __HAL_RCC_USART1_CLK_ENABLE();
   __HAL_RCC_USART1_FORCE_RESET();
@@ -206,7 +206,7 @@ void UART_Config(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-  
+
   /* Peripheral config */
   UartHandle.Instance = USART1;
   UartHandle.Init.BaudRate = USE_UART_BAUDRATE;
@@ -233,15 +233,15 @@ void NPU_Config(void)
   __HAL_RCC_NPU_FORCE_RESET();
   __HAL_RCC_NPU_RELEASE_RESET();
   // __HAL_RCC_NPU_CLK_SLEEP_DISABLE();
-  
+
   // __HAL_RCC_RAMCFG_CLK_SLEEP_DISABLE();
-  
+
   __HAL_RCC_CACHEAXI_CLK_ENABLE();
   __HAL_RCC_CACHEAXI_FORCE_RESET();
   __HAL_RCC_CACHEAXI_RELEASE_RESET();
 //  __HAL_RCC_CACHEAXI_CLK_SLEEP_DISABLE();
   npu_cache_init();
-  
+
 #ifdef USE_NPU_CACHE
    npu_cache_enable(); // Useless: already enabled by init
 #else
@@ -264,20 +264,20 @@ void RISAF_Config(void)
   */
   set_risaf_default(RISAF2_S);          /* SRAM1_AXI */
   set_risaf_default(RISAF3_S);          /* SRAM2_AXI */
-  
+
   set_risaf_default(RISAF4_S);          /* NPU MST0 */
   set_risaf_default(RISAF5_S);          /* NPU MST1 */
-  
+
   set_risaf_default(RISAF6_S);          /* SRAM3,4,5,6_AXI */
   set_risaf_default(RISAF7_S);          /* FLEXMEM */
-  
+
 #ifdef USE_NPU_CACHE
   set_risaf_default(RISAF8_S);          /* NPU_CACHE */
   set_risaf_default(RISAF15_S);         /* NPU_CACHE config */
-#endif  
-  
+#endif
+
   // set_risaf_default(RISAF9_S);       /* VENC */
-  
+
 #if defined(USE_EXTERNAL_MEMORY_DEVICES) && USE_EXTERNAL_MEMORY_DEVICES == 1
 #if (NUCLEO_N6_CONFIG == 0)
   set_risaf_default(RISAF11_S);         /* OCTOSPI1 0x9000 0000 */
@@ -285,7 +285,7 @@ void RISAF_Config(void)
   set_risaf_default(RISAF12_S);         /* OCTOSPI2 0x7000 0000 */
   // set_risaf_default(RISAF13_S);      /* OCTOSPI3 0x8000 0000 */
 #endif
-  
+
 }
 
 
@@ -304,20 +304,20 @@ void set_vector_table_addr(void)
 
 
 void system_init_post(void)
-{  
+{
   __HAL_RCC_SYSCFG_CLK_ENABLE();
   __HAL_RCC_CRC_CLK_ENABLE();
-   
+
   /* Enable NPU RAMs (4x448KB) + CACHEAXI */
   RCC->MEMENR |= RCC_MEMENR_AXISRAM3EN | RCC_MEMENR_AXISRAM4EN | RCC_MEMENR_AXISRAM5EN | RCC_MEMENR_AXISRAM6EN;
   RCC->MEMENR |= RCC_MEMENR_CACHEAXIRAMEN; // RCC_MEMENR_NPUCACHERAMEN;
-  
+
   RAMCFG_SRAM2_AXI->CR &= ~RAMCFG_CR_SRAMSD;
   RAMCFG_SRAM3_AXI->CR &= ~RAMCFG_CR_SRAMSD;
   RAMCFG_SRAM4_AXI->CR &= ~RAMCFG_CR_SRAMSD;
   RAMCFG_SRAM5_AXI->CR &= ~RAMCFG_CR_SRAMSD;
   RAMCFG_SRAM6_AXI->CR &= ~RAMCFG_CR_SRAMSD;
-    
+
   /* Allow caches to be activated. Default value is 1, but the current boot sets it to 0 */
   MEMSYSCTL->MSCR |= MEMSYSCTL_MSCR_DCACTIVE_Msk | MEMSYSCTL_MSCR_ICACTIVE_Msk;
 }

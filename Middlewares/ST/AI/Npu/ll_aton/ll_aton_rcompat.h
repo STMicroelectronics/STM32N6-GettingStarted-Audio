@@ -384,6 +384,12 @@
 #define ATON_DEBUG_TRACE_TRIG_ADDR(UNIT, IDX)      (ATON_DEBUG_TRACE_TRIG_0_ADDR(UNIT) + ((IDX) << 2))
 #define ATON_DEBUG_TRACE_EVENT_ADDR(UNIT, IDX)     (ATON_DEBUG_TRACE_EVENT_0_ADDR(UNIT) + ((IDX) << 2))
 #define ATON_DEBUG_TRACE_EVENT_CNT_ADDR(UNIT, IDX) (ATON_DEBUG_TRACE_EVENT_0_CNT_ADDR(UNIT) + ((IDX) << 2))
+#define ATON_DEBUG_TRACE_EVENT_CNT_GET(UNIT, IDX)  ATON_GET_REG32(ATON_DEBUG_TRACE_EVENT_CNT_ADDR(UNIT, IDX))
+#define ATON_DEBUG_TRACE_EVENT_CNT_SET(UNIT, IDX, DATA)                                                                \
+  do                                                                                                                   \
+  {                                                                                                                    \
+    ATON_SET_REG32(ATON_DEBUG_TRACE_EVENT_CNT_ADDR(UNIT, IDX), DATA);                                                  \
+  } while (0)
 
 #define ATON_DEBUG_TRACE_TRIG_DT                              ATON_DEBUG_TRACE_TRIG_0_DT
 #define ATON_DEBUG_TRACE_EVENT_DT                             ATON_DEBUG_TRACE_EVENT_0_DT

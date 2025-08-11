@@ -144,7 +144,7 @@ g_pfnVectors:
   .word	DebugMon_Handler
   .word	0
   .word	PendSV_Handler
-  .word	SysTick_Handler
+  .word	_SysTick_Handler
   .word	PVD_PVM_IRQHandler         			/* PVDOUT through the EXTI line                                  */
   .word	0                          			/* Reserved                                                      */
   .word	DTS_IRQHandler             			/* Thermal sensor interruption                                   */
@@ -376,8 +376,8 @@ g_pfnVectors:
 	.weak	PendSV_Handler
 	.thumb_set PendSV_Handler,Default_Handler
 
-	.weak	SysTick_Handler
-	.thumb_set SysTick_Handler,Default_Handler
+	.weak	_SysTick_Handler
+	.thumb_set _SysTick_Handler,Default_Handler
 
 	.weak	PVD_PVM_IRQHandler
 	.thumb_set PVD_PVM_IRQHandler,Default_Handler

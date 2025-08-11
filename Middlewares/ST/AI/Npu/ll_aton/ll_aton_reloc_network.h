@@ -89,7 +89,9 @@ extern "C"
 #define AI_RELOC_ARM_CORTEX_M55 (0xD22UL)
 
 /* Tool-chain definition (ONLY this tool-chain is currently supported)*/
-#define AI_RELOC_TOOLCHAIN_ARM_EMBEDDED (0x8UL)
+#define AI_RELOC_TOOLCHAIN_GCC_EMBEDDED      (0x8UL)
+#define AI_RELOC_TOOLCHAIN_CLANG_EMBEDDED    (0x9UL)
+#define AI_RELOC_TOOLCHAIN_ST_CLANG_EMBEDDED (0xAUL)
 
 /* Floating-point ABI definition (in relation with the tool-chain) */
 #define AI_RELOC_TOOLCHAIN_FP_ABI_SOFT   (0x0UL)
@@ -199,6 +201,7 @@ extern "C"
     const uint32_t rt_version_extra;    /* rt version extra */
     const uint32_t params_bin_sz;       /* size of the binary blob to handle the params/weights */
     const uint32_t params_bin_crc32;    /* crc32 value of the binary blob */
+    const uint32_t rt_c_struct_sizes;   /* sizeof(struct) - to check enum size/c-struct padding */
     NN_Instance_TypeDef *ll_instance;   /* associated user NN Instance for LL ATON code */
     const NN_Interface_TypeDef *itf_network;
   };
@@ -339,10 +342,16 @@ extern "C"
 
 #if !defined(MODEL_CONF)
 #include "network_reloc_conf.h"
+#else
+#include MODEL_CONF
 #endif
 
 #if !defined(C_NAME)
 #define C_NAME "network"
+#endif
+
+#if !defined(C_FCT_SUFFIX)
+#define C_FCT_SUFFIX "_Default"
 #endif
 
 #if !defined(ACTS_SZ)
@@ -374,7 +383,15 @@ extern "C"
 #endif
 
 #if !defined(ARM_TOOLS_CONF)
-#define ARM_TOOLS_CONF AI_RELOC_TOOLCHAIN_ARM_EMBEDDED
+#if defined(__clang__)
+#if defined(__starm__)
+#define ARM_TOOLS_CONF AI_RELOC_TOOLCHAIN_ST_CLANG_EMBEDDED
+#else
+#define ARM_TOOLS_CONF AI_RELOC_TOOLCHAIN_CLANG_EMBEDDED
+#endif
+#else
+#define ARM_TOOLS_CONF AI_RELOC_TOOLCHAIN_GCC_EMBEDDED
+#endif
 #endif
 
 #if !defined(SECURE_CONF)
@@ -431,8 +448,21 @@ extern "C"
 #endif
 
 #if !defined(__GNUC__)
-#error "AI_NETWORK_RELOC code generation is only supported with a GCC-based tool-chain"
+#error "AI_NETWORK_RELOC code generation is only supported with a CLANG/GCC-based tool-chain"
 #endif
+
+#define MAKE_FN_(_x, _suff) LL_ATON_##_x##_##_suff
+
+#define _EC_NET_INIT(name)           MAKE_FN_(EC_Network_Init, name)
+#define _EC_INF_INIT(name)           MAKE_FN_(EC_Inference_Init, name)
+#define _SET_INPUT_BUFF(name)        MAKE_FN_(Set_User_Input_Buffer, name)
+#define _GET_INPUT_BUFF(name)        MAKE_FN_(Get_User_Input_Buffer, name)
+#define _SET_OUTPUT_BUFF(name)       MAKE_FN_(Set_User_Output_Buffer, name)
+#define _GET_OUTPUT_BUFF(name)       MAKE_FN_(Get_User_Output_Buffer, name)
+#define _EPOCH_BLOCK_ITEMS(name)     MAKE_FN_(EpochBlockItems, name)
+#define _OUTPUT_BUFFERS_INFO(name)   MAKE_FN_(Output_Buffers_Info, name)
+#define _INPUT_BUFFERS_INFO(name)    MAKE_FN_(Input_Buffers_Info, name)
+#define _INTERNAL_BUFFERS_INFO(name) MAKE_FN_(Internal_Buffers_Info, name)
 
 #if !defined(INCLUDE_INTERNAL_BUFFERS)
   const LL_Buffer_InfoTypeDef *LL_ATON_Internal_Buffers_Info_Default_Empty(void)
@@ -442,7 +472,7 @@ extern "C"
 
 #define _LL_ATON_INTERNAL_BUFFERS LL_ATON_Internal_Buffers_Info_Default_Empty
 #else
-#define _LL_ATON_INTERNAL_BUFFERS LL_ATON_Internal_Buffers_Info_Default
+#define _LL_ATON_INTERNAL_BUFFERS _INTERNAL_BUFFERS_INFO(C_FCT_SUFFIX)
 #endif
 
   /*
@@ -466,6 +496,8 @@ extern "C"
 
   const NN_Interface_TypeDef _itf_network = {.network_name = C_NAME};
 
+#define C_STRUCT_SIZE (sizeof(LL_Buffer_InfoTypeDef) | sizeof(EpochBlock_ItemTypeDef) << 8)
+
 #define AI_RELOC_NETWORK()                                                                                             \
   struct ai_reloc_rt_ctx __attribute__((used, section(".network_rt_ctx"), )) _network_rt_ctx = {0,                     \
                                                                                                 0,                     \
@@ -481,19 +513,20 @@ extern "C"
                                                                                                 RUNTIME_VERSION_DEV,   \
                                                                                                 PARAMS_BIN_SZ,         \
                                                                                                 PARAMS_BIN_CRC32,      \
+                                                                                                C_STRUCT_SIZE,         \
                                                                                                 NULL,                  \
                                                                                                 &_itf_network};        \
   const struct ai_reloc_network_entries __attribute__((used, section(".network_entries"), visibility("default")))      \
   _network_entries = {                                                                                                 \
-      .ec_network_init = &LL_ATON_EC_Network_Init_Default,                                                             \
-      .ec_inference_init = &LL_ATON_EC_Inference_Init_Default,                                                         \
-      .input_setter = &LL_ATON_Set_User_Input_Buffer_Default,                                                          \
-      .input_getter = &LL_ATON_Get_User_Input_Buffer_Default,                                                          \
-      .output_setter = &LL_ATON_Set_User_Output_Buffer_Default,                                                        \
-      .output_getter = &LL_ATON_Get_User_Output_Buffer_Default,                                                        \
-      .get_epoch_items = &LL_ATON_EpochBlockItems_Default,                                                             \
-      .get_output_buffers_info = &LL_ATON_Output_Buffers_Info_Default,                                                 \
-      .get_input_buffers_info = &LL_ATON_Input_Buffers_Info_Default,                                                   \
+      .ec_network_init = &_EC_NET_INIT(C_FCT_SUFFIX),                                                                  \
+      .ec_inference_init = &_EC_INF_INIT(C_FCT_SUFFIX),                                                                \
+      .input_setter = &_SET_INPUT_BUFF(C_FCT_SUFFIX),                                                                  \
+      .input_getter = &_GET_INPUT_BUFF(C_FCT_SUFFIX),                                                                  \
+      .output_setter = &_SET_OUTPUT_BUFF(C_FCT_SUFFIX),                                                                \
+      .output_getter = &_GET_OUTPUT_BUFF(C_FCT_SUFFIX),                                                                \
+      .get_epoch_items = &_EPOCH_BLOCK_ITEMS(C_FCT_SUFFIX),                                                            \
+      .get_output_buffers_info = &_OUTPUT_BUFFERS_INFO(C_FCT_SUFFIX),                                                  \
+      .get_input_buffers_info = &_INPUT_BUFFERS_INFO(C_FCT_SUFFIX),                                                    \
       .get_internal_buffers_info = &_LL_ATON_INTERNAL_BUFFERS,                                                         \
       .rt_ctx = &_network_rt_ctx,                                                                                      \
   };                                                                                                                   \

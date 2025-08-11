@@ -27,9 +27,9 @@ before exposing the results to the user in real time.
 
 | Name                                | Version    | Release notes
 |-----                                | -------    | -------------
-| STEdge AI runtime                   |  v2.1.0    | 
+| STEdge AI runtime                   |  v10.2.0   |
 | STM32 AI AudioPreprocessing Library |  v1.2.0    | [release notes](Middlewares/ST/STM32_AI_AudioPreprocessing_Library/Release_Notes.html)
-| ThreadX                             |  v6.4.0    | [release notes](Middlewares/ST/ThreadX/st_readme.txt)
+| FreeRTOS kernel                     |  v10.6.2   | [release notes](Middlewares/ST/FreeRTOS/Source/History.txt)
 | CMSIS                               |  v5.9.0    | [release notes](Drivers/CMSIS/Documentation/index.html)
 | STM32N6xx CMSIS Device              |  v1.1.0    | [release notes](Drivers/CMSIS/Device/ST/STM32N6xx/Release_Notes.html)
 | STM32N6xx HAL/LL Drivers            |  v1.1.0    | [release notes](Drivers/STM32N6xx_HAL_Driver/Release_Notes.html)
@@ -41,6 +41,11 @@ before exposing the results to the user in real time.
 | BSP Component Common                |  v7.3.0    | [release notes](Drivers/BSP/Components/Common/Release_Notes.html)
 
 ## Update history
+
+### V2.1.0
+
+- Migrate ThreadX project to freertos project
+- Upgrade to STEdgeAI 2.2.0
 
 ### V2.0.0 / May 2025
 

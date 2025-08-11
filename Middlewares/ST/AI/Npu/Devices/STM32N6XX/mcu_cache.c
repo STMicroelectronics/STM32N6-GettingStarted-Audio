@@ -17,6 +17,8 @@
 
 #include "mcu_cache.h"
 
+#include "assert.h"
+
 int mcu_cache_enable(void)
 {
   SCB_EnableDCache();
@@ -28,12 +30,12 @@ int mcu_cache_disable(void)
   SCB_DisableDCache();
   return 0;
 }
- 
+
 int mcu_cache_invalidate(void)
 {
   if(mcu_cache_enabled()) {
     SCB_InvalidateDCache();
-  }  
+  }
   return 0;
 }
 
@@ -41,7 +43,7 @@ int mcu_cache_clean(void)
 {
   if(mcu_cache_enabled()) {
     SCB_CleanDCache();
-  }  
+  }
   return 0;
 }
 
@@ -49,11 +51,11 @@ int mcu_cache_clean_invalidate(void)
 {
   if(mcu_cache_enabled()) {
     SCB_CleanInvalidateDCache();
-  }  
+  }
   return 0;
 }
 
-int mcu_cache_invalidate_range(uint32_t start_addr, uint32_t end_addr) 
+int mcu_cache_invalidate_range(uint32_t start_addr, uint32_t end_addr)
 {
   if(mcu_cache_enabled()) {
     SCB_InvalidateDCache_by_Addr((volatile void *)start_addr, (int32_t)(end_addr - start_addr));
@@ -84,7 +86,7 @@ void set_mcu_cache_state(uint8_t i_cache_state, uint8_t d_cache_state)
   {
     SCB_DisableICache();
   }
-  
+
   if (d_cache_state)
   {
     SCB_EnableDCache();

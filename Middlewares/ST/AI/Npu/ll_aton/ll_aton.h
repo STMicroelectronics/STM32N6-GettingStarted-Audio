@@ -464,9 +464,12 @@ extern "C"
                                    *   If set to zero it's derived from width and batch_offset */
     unsigned loop_offset;         /**< Offset between frame repetition loops */
     unsigned frame_loop_cnt;      /**< Number of frames to loop */
-    unsigned frame_tot_cnt;       /**< Frame limit */
-    unsigned char nbits_in;       /**< Data size in bits if reading */
-    unsigned char nbits_out;      /**< Data size in bits if writing */
+    unsigned
+        loop_offset2; /**< 2nd level offset between frame repetition loops. If set, has priority over loop_offset */
+    unsigned frame_loop_cnt2; /**< 2nd level number of frames to loop */
+    unsigned frame_tot_cnt;   /**< Frame limit */
+    unsigned char nbits_in;   /**< Data size in bits if reading */
+    unsigned char nbits_out;  /**< Data size in bits if writing */
   } LL_Streng_TensorInitTypeDef;
 
   static inline unsigned char *LL_Streng_addr_start(const LL_Streng_TensorInitTypeDef *conf)

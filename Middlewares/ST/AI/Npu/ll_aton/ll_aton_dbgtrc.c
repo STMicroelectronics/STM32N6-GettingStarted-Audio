@@ -274,8 +274,7 @@ int LL_Dbgtrc_Counter_Stop(int id, int counter)
  */
 uint32_t LL_Dbgtrc_Counter_Read(int id, int counter)
 {
-  volatile uint32_t *reg = (volatile uint32_t *)(ATON_DEBUG_TRACE_EVENT_CNT_ADDR(id, counter));
-  return *reg;
+  return ATON_DEBUG_TRACE_EVENT_CNT_GET(id, counter);
 }
 
 /**

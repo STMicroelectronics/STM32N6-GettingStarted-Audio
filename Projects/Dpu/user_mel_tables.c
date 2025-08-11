@@ -2,11 +2,13 @@
 ******************************************************************************
 * @file    user_mel_tables.c
 * @author  MCD Application Team
+* @version V2.0.0
+* @date    02-May-2025
 * @brief   This file has lookup tables for user-defined windows and mel filter banks
 ******************************************************************************
 * @attention
 *
-* Copyright (c) 2022-2025 STMicroelectronics.
+* Copyright (c) 2022 STMicroelectronics.
 * All rights reserved.
 *
 * This software is licensed under terms that can be found in the LICENSE file

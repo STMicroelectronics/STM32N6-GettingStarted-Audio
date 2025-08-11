@@ -121,19 +121,6 @@ void LL_ATON_Cache_NPU_Clean_Invalidate_Range(uintptr_t virtual_addr, uint32_t s
   };
 }
 
-#if 0
-bool ec_copy_program(const uint8_t *file_ptr, ECInstr *program, unsigned int *program_size)
-{
-	register uint32_t _saved_r9;
-	register const struct ai_reloc_callback *cbs = _network_rt_ctx.cbs;
-	if (cbs && cbs->ec_copy_program) {
-		__asm volatile( "MOV %0, R9\n\t" :"=r"(_saved_r9));
-		cbs->ec_copy_program(file_ptr, program, program_size);
-		__asm volatile( "MOV R9, %0\n\t" ::"r"(_saved_r9));
-	};
-}
-#endif
-
 /*
  * LL_ATON_LIB_ functions (see ll_lib_aton.h)
  */

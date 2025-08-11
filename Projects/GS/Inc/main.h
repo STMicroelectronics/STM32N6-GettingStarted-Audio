@@ -30,6 +30,7 @@
 #include "app_config.h"
 #include "system_clock_config.h"
 #include "AudioCapture_ring_buff.h"
+#include "tasks_def.h"
 
 #ifndef PREPROC_FLOAT_16
 #error only PREPROC_FLOAT_16 is supported in this version

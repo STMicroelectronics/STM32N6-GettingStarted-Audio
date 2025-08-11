@@ -52,14 +52,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC_/GS/Src</locationURI>
 		</link>
 		<link>
-			<name>Application/ThreadX</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/ThreadX</locationURI>
-		</link>
-		<link>
 			<name>Application/X-CUBE-AI</name>
 			<type>2</type>
 			<locationURI>PARENT-2-PROJECT_LOC_/X-CUBE-AI</locationURI>
+		</link>
+		<link>
+			<name>Application/freertos</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/freertos</locationURI>
 		</link>
 		<link>
 			<name>Drivers/BSP</name>
@@ -82,9 +82,44 @@
 			<locationURI>PARENT-3-PROJECT_LOC_/Drivers/CMSIS/Device/ST/STM32N6xx/Source/Templates/system_stm32n6xx_fsbl.c</locationURI>
 		</link>
 		<link>
+			<name>Middleware/ST/.git</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/.git</locationURI>
+		</link>
+		<link>
 			<name>Middleware/ST/AI</name>
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC_/Middlewares/ST/AI</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/CODE_OF_CONDUCT.md</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/CODE_OF_CONDUCT.md</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/CONTRIBUTING.md</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/CONTRIBUTING.md</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/FreeRTOS</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/LICENSE.md</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/LICENSE.md</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/README.md</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/README.md</locationURI>
+		</link>
+		<link>
+			<name>Middleware/ST/SECURITY.md</name>
+			<type>1</type>
+			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/FreeRTOS/SECURITY.md</locationURI>
 		</link>
 		<link>
 			<name>Middleware/ST/STM32_AI_AudioPreprocessing_Library</name>
@@ -150,96 +185,6 @@
 			<name>Drivers/CMSIS/DSP/TransformFunctionsF16.c</name>
 			<type>1</type>
 			<locationURI>PARENT-3-PROJECT_LOC/Drivers/CMSIS/DSP/Source/TransformFunctions/TransformFunctionsF16.c</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/common</name>
-			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/common</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_initialize_low_level.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_initialize_low_level.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_misra.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_misra.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_context_restore.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_context_restore.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_context_save.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_context_save.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_interrupt_control.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_interrupt_control.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_interrupt_disable.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_interrupt_disable.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_interrupt_restore.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_interrupt_restore.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_schedule.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_schedule.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_secure_stack.c</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_secure_stack.c</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_secure_stack_allocate.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_secure_stack_allocate.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_secure_stack_free.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_secure_stack_free.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_secure_stack_initialize.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_secure_stack_initialize.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_stack_build.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_stack_build.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_thread_system_return.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_thread_system_return.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/tx_timer_interrupt.S</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/tx_timer_interrupt.S</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/txe_thread_secure_stack_allocate.c</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/txe_thread_secure_stack_allocate.c</locationURI>
-		</link>
-		<link>
-			<name>Middleware/ST/ThreadX/port/txe_thread_secure_stack_free.c</name>
-			<type>1</type>
-			<locationURI>PARENT-3-PROJECT_LOC/Middlewares/ST/ThreadX/ports/cortex_m55/gnu/src/txe_thread_secure_stack_free.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

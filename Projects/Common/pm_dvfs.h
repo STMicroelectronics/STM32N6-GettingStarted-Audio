@@ -21,11 +21,12 @@
 #ifndef __PM_DVFS_H__
 #define __PM_DVFS_H__
 
-#ifndef APP_BARE_METAL  
-#include "tx_api.h"
+#ifndef APP_BARE_METAL
+#include "FreeRTOS.h"
+#include "semphr.h"
 #endif
 
-#ifdef APP_DVFS 
+#ifdef APP_DVFS
 typedef enum _opp_t {
   OPP_MIN = 0,
   OPP_MAX
@@ -33,15 +34,16 @@ typedef enum _opp_t {
 
 typedef struct _dvfs_ctx_t
 {
-#ifndef APP_BARE_METAL  
-  TX_MUTEX lock;
+#ifndef APP_BARE_METAL
+  SemaphoreHandle_t lock;    /* FreeRTOS mutex handle */
+  StaticSemaphore_t lock_buffer;  // FreeRTOS Memory buffer for mutex internal data
 #endif /* APP_BARE_METAL */
   opp_t opp;
   uint32_t cpu_freq;
   int32_t cnt;
 }dvfs_ctx_t;
 extern void pm_init_dvfs(void);
-extern void pm_set_opp_min(opp_t opp); 
+extern void pm_set_opp_min(opp_t opp);
 #endif /* APP_DVFS */
 
 #endif /* __PM_DVFS_H__*/

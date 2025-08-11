@@ -30,16 +30,7 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ll_aton_config.h"
-
-#include "ll_aton_NN_interface.h"
-#include "ll_aton_osal.h"
-#include "ll_aton_platform.h"
-#include "ll_aton_util.h"
-
-  /*** Types ***/
-
-  typedef EpochBlock_ItemTypeDef LL_ATON_RT_EpochBlockItem_t;
+#include "ll_aton_rt_user_api.h"
 
   /*** Helper Functions ***/
 
@@ -214,73 +205,6 @@ extern "C"
     int32_t new_index = current_index - dec;
     __LL_ATON_RT_SetCurrentEpochBlock(new_index, __ll_current_aton_ip_owner);
   }
-
-  /*** User API Functions ***/
-
-  /**
-   * @brief Register callback for ATON runtime related events (e.g. initialization/deinitialization, see
-   * `LL_ATON_RT_Callbacktype_t`)
-   * @param rt_callback Function pointer to callback function (set to `NULL` to disable epoch tracing)
-   *
-   * @note  This function must only be called when no network is currently executing!
-   */
-  void LL_ATON_RT_SetRuntimeCallback(TraceRuntime_FuncPtr_t rt_callback);
-
-  /**
-   * @brief Register callback for tracing epoch/network related events (see `LL_ATON_RT_Callbacktype_t`)
-   * @param epoch_block_callback Function pointer to callback function (set to `NULL` to disable epoch tracing)
-   * @param nn_instance          Pointer to network instance for which to set the callback (may not be `NULL`)
-   *
-   * @note  This function must only be called while the passed network instance is not executing
-   *        and should be called before `LL_ATON_RT_Init_Network()`!
-   */
-  void LL_ATON_RT_SetEpochCallback(TraceEpochBlock_FuncPtr_t epoch_block_callback, NN_Instance_TypeDef *nn_instance);
-
-  /**
-   * @brief Initialise a network instance
-   * @param nn_instance Pointer to network instance to initialize
-   */
-  void LL_ATON_RT_Init_Network(NN_Instance_TypeDef *nn_instance);
-
-  /**
-   * @brief De-initialise a network instance
-   * @param nn_instance Pointer to network instance to de-initialize
-   */
-  void LL_ATON_RT_DeInit_Network(NN_Instance_TypeDef *nn_instance);
-
-  /**
-   * @brief Reset network instance for getting ready for a new inference
-   * @param nn_instance Pointer to network instance to initialize
-   *
-   * @note May only be called in case `LL_ATON_RT_RunEpochBlock()` returned either `LL_ATON_RT_DONE` or
-   *       `LL_ATON_RT_NO_WFE`
-   */
-  void LL_ATON_RT_Reset_Network(NN_Instance_TypeDef *nn_instance);
-
-  /**
-   * @brief Initialize the ATON runtime
-   */
-  void LL_ATON_RT_RuntimeInit(void);
-
-  /**
-   * @brief De-initialize the ATON runtime
-   */
-  void LL_ATON_RT_RuntimeDeInit(void);
-
-  /**
-   * @brief  Checks status of previously started epoch block and
-   *         starts execution of next epoch block of the NN provided the previous epoch block has terminated
-   * @param nn_instance Pointer to network instance to run/continue (may not be `NULL`)
-   * @retval LL_ATON_RT_NO_WFE  Next epoch block may be started, NN execution not finished, do not call
-   *                            `LL_ATON_OSAL_WFE()`
-   * @retval LL_ATON_RT_WFE     Epoch block is still running, NN execution not finished, you may call
-   *                            `LL_ATON_OSAL_WFE()`.
-   *                            NOTE, that in this case no other network instance may be run/continued from within the
-   *                            same thread!
-   *                            It is entirely the user's responsibility to comply with this restriction!
-   * @retval LL_ATON_RT_DONE    NN execution finished
-   */
-  LL_ATON_RT_RetValues_t LL_ATON_RT_RunEpochBlock(NN_Instance_TypeDef *nn_instance);
 
   /**
    * @brief Template for synchronously executing a single network instance (e.g. regression tests)

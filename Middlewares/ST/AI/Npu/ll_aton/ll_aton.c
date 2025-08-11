@@ -679,9 +679,19 @@ int LL_Streng_TensorInit(int id, const LL_Streng_TensorInitTypeDef *conf, int n)
     ATON_STRENG_DEPTH_SET(id, t);
   }
 
+  ATON_STRENG_FOFFSET_SET(id, conf->frame_offset);
+
+  /* Frame repetition loop configuration */
   ATON_STRENG_FRPTOFF_SET(id, conf->loop_offset);
   ATON_STRENG_FRAME_RPT_SET(id, conf->frame_loop_cnt);
-  ATON_STRENG_FOFFSET_SET(id, conf->frame_offset);
+
+  /* Second level frame repetition loop configuration (if available) */
+#ifdef ATON_STRENG_FRAME_RPT2_DT
+  if (conf->frame_loop_cnt2 != ATON_STRENG_FRAME_RPT2_DT)
+    ATON_STRENG_FRAME_RPT2_SET(id, conf->frame_loop_cnt2);
+  if (conf->loop_offset2 != ATON_STRENG_FRPTOFF2_DT)
+    ATON_STRENG_FRPTOFF2_SET(id, conf->loop_offset2);
+#endif
 
   t = ATON_STRENG_LIMITEN_DT; // all other fields set to zero
   t = ATON_STRENG_LIMITEN_SET_FRAMELIMIT(t, 1);
@@ -2634,7 +2644,7 @@ uintptr_t get_ec_aton_base(void)
 
 void initialize_ec_aton_base(void)
 {
-  ec_aton_base = malloc(ATON_SIZE);
+  ec_aton_base = malloc(ATON_ADDR_SPACE_SIZE);
 }
 
 /* Called by patched ATON.h to trace ATON register stores */

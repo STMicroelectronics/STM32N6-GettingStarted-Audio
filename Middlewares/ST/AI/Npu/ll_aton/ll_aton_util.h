@@ -31,25 +31,33 @@ extern "C"
 
 #ifndef NDEBUG
 
-#define LL_ATON_PRINTF(...) printf(__VA_ARGS__)
-#define LL_ATON_PUTS(...)   puts(__VA_ARGS__)
-#define LL_ATON_FFLUSH(...) fflush(__VA_ARGS__)
+#define LL_ATON_PRINTF(...)  printf(__VA_ARGS__)
+#define LL_ATON_FPRINTF(...) fprintf(__VA_ARGS__)
+#define LL_ATON_PUTS(...)    puts(__VA_ARGS__)
+#define LL_ATON_FFLUSH(...)  fflush(__VA_ARGS__)
+#define LL_ATON_FOPEN(...)   fopen(__VA_ARGS__)
+#define LL_ATON_FCLOSE(...)  fclose(__VA_ARGS__)
 
 #define LL_ATON_ASSERT(...) assert(__VA_ARGS__)
 
-#define LL_ATON_PROFILER_PRINTF(...) printf(__VA_ARGS__)
-#define LL_ATON_PROFILER_ASSERT(...) assert(__VA_ARGS__)
+#define LL_ATON_PROFILER_PRINTF(...)  printf(__VA_ARGS__)
+#define LL_ATON_PROFILER_FPRINTF(...) fprintf(__VA_ARGS__)
+#define LL_ATON_PROFILER_ASSERT(...)  assert(__VA_ARGS__)
 
 #else
 
 #define LL_ATON_PRINTF(...)
+#define LL_ATON_FPRINTF(...)
 #define LL_ATON_PUTS(...)
 #define LL_ATON_FFLUSH(...)
+#define LL_ATON_FOPEN(...) NULL
+#define LL_ATON_FCLOSE(...)
 
 #define LL_ATON_ASSERT(...)
 #define LL_ATON_ASSERTF(...)
 
 #define LL_ATON_PROFILER_PRINTF(...)
+#define LL_ATON_PROFILER_FPRINTF(...)
 #define LL_ATON_PROFILER_ASSERT(...)
 
 #endif

@@ -32,6 +32,33 @@
 #define DEFAULT_WEIGHT_KEY_SEL 0
 #endif
 
+#if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+
+/**
+ * @brief Construct the patch identifier given Stream Engine index and the information about the register (ENCR_LSB /
+ * ENCR_MSB) that must be patched.
+ * @param patch_id array containing the patch identifier (that must be already allocated and large enought); this array
+ * will be filled by this function
+ * @param streng_idx Streaming engine index [0..ATON_STRENG_NUM-1]
+ * @param lsb_sb is \e true if the ENCR_LSB register must be patched, \e false if the ENCR_MSB register must be patched
+ * grouped
+ */
+void construct_patch_id_streng(char *patch_id, int streng_idx, bool lsb_msb)
+{
+  patch_id[0] = 'S';
+  patch_id[1] = 'E';
+  patch_id[2] = '_';
+  patch_id[3] = '0' + (streng_idx / 10);
+  patch_id[4] = '0' + (streng_idx % 10);
+  patch_id[5] = '_';
+  patch_id[6] = (lsb_msb ? 'L' : 'M');
+  patch_id[7] = 'S';
+  patch_id[8] = 'B';
+  patch_id[9] = '\0';
+}
+
+#endif // #if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+
 #if (ATON_STRENG_VERSION_ENCR_DT == 1)
 /**
  * @brief Configures the Streaming Engine Encryption support
@@ -43,12 +70,23 @@
  */
 int LL_Streng_EncryptionInit(int id, LL_Streng_EncryptionTypedef *LL_Streng_EncryptionStruct)
 {
+#if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+  char patch_id[32];
+#endif
+
   uint32_t t;
 
   if (id >= ATON_STRENG_NUM)
     return LL_ATON_INVALID_ID;
 
   t = LL_Streng_EncryptionStruct->encryption_id & 0xffffffff;
+
+#if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+  construct_patch_id_streng(patch_id, id, true);
+
+  ec_trace_set_patch_params(patch_id, 0xffffffff);
+#endif
+
   ATON_STRENG_ENCR_LSB_SET(id, t);
 
   t = ATON_STRENG_ENCR_MSB_DT;
@@ -57,6 +95,14 @@ int LL_Streng_EncryptionInit(int id, LL_Streng_EncryptionTypedef *LL_Streng_Encr
   t = ATON_STRENG_ENCR_MSB_SET_ROUNDS(t, LL_Streng_EncryptionStruct->rounds);
   t = ATON_STRENG_ENCR_MSB_SET_KEY_SEL(t, LL_Streng_EncryptionStruct->key_sel);
   t = ATON_STRENG_ENCR_MSB_SET_INC(t, LL_Streng_EncryptionStruct->increment);
+
+#if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+  construct_patch_id_streng(patch_id, id, false);
+
+  ec_trace_set_patch_params(patch_id, ATON_STRENG_ENCR_MSB_ID_MSB_MASK | ATON_STRENG_ENCR_MSB_ROUNDS_MASK |
+                                          ATON_STRENG_ENCR_MSB_KEY_SEL_MASK);
+#endif
+
   ATON_STRENG_ENCR_MSB_SET(id, t);
 
   return 0;
@@ -83,6 +129,10 @@ int LL_Streng_WeightEncryptionInit(int id)
  */
 int LL_Busif_SetKeys(int id, int key, uint64_t key_low, uint64_t key_hi)
 {
+#if (LL_ATON_PLATFORM == LL_ATON_PLAT_EC_TRACE)
+  char patch_id[32];
+#endif
+
   if (id >= ATON_BUSIF_NUM)
     return LL_ATON_INVALID_ID;
 
@@ -141,10 +191,10 @@ int LL_EpochCtrl_EncryptionInit(int id, LL_Streng_EncryptionTypedef *conf)
  * @brief  Handles Dma/Cypher data transfer
  * @param  cypherInfo: transfer parameters (addresses, keys, ... )
  * @retval Error code (0: og - -1: ko)
+ * @note   WARNING: this is an utility function and its usage is not compatible with the ATON runtime
  * @note   The function uses stream engines 0 and 1
  * @note   It uses default (0) values for encryption id and round (12)
  */
-
 int LL_DmaCypherInit(LL_Cypher_InitTypeDef *cypherInfo)
 {
   uint32_t limit;
